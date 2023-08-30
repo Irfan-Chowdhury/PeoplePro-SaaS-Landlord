@@ -17,14 +17,15 @@ return [
      *
      * Only relevant if you're using the domain or subdomain identification middleware.
      */
-    'central_domains' => [
-        'peopleprosaas.test',
-        // "foo.peopleprosaas.test"
+    // 'central_domains' => [
+    //     'peopleprosaas.test',
+    //     // "foo.peopleprosaas.test"
 
-        // '127.0.0.1',
-        // 'localhost',
-        // env('CENTRAL_DOMAIN')
-    ],
+    //     // '127.0.0.1',
+    //     // 'localhost',
+    //     // env('CENTRAL_DOMAIN')
+    // ],
+    'central_domains' => [env('CENTRAL_DOMAIN')],
 
     /**
      * Tenancy bootstrappers are executed when tenancy is initialized.

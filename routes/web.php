@@ -61,7 +61,7 @@ Route::get('/super-admin', [AdminController::class, 'showLoginForm'])->name('lan
 Route::post('/super-admin', [AdminController::class, 'login'])->name('landlord.login.proccess');
 Route::post('/super-admin/logout', [AdminController::class, 'logout'])->name('landlord.logout');
 
-Route::middleware(['auth','setLocale'])->group(function () {
+Route::middleware(['web','auth','setLocale'])->group(function () {
     Route::prefix('super-admin')->group(function () {
 
         Route::get('dashboard',[DashboardController::class, 'index'])->name('landlord.dashboard');
