@@ -537,8 +537,6 @@ public function createDatabase(TenantWithDatabase $tenant): bool
 }
 ```
 
-#### <i>All Done !! Now run your app in your local machine</i>
-
 ## Credits
 - Author : [LION CODERS](https://lion-coders.com/)
 - Template Design : [Tarik Iqbal](https://www.linkedin.com/in/tarik-iqbal-51046b34/)
