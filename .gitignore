@@ -26,7 +26,7 @@ yarn-error.log
 
 
 
-# git rm -r --cached app/Http/Controllers && git add -f app/Http/Controllers/Landlord && && git add -f app/Http/Controllers/Auth
+# git rm -r --cached app/Http/Controllers && git add -f app/Http/Controllers/Landlord && git add -f app/Http/Controllers/Auth
 # git rm -r --cached database/migrations && git add -f database/migrations/landlord
 # git rm -r --cached resources/views && git add -f resources/views/landlord
 
