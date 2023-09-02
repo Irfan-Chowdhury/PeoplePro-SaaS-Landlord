@@ -9,9 +9,11 @@
             <div class="d-flex flex-row">
                     @can('store-user')
                         <div class="dropdown mr-1">
-                            <button class="btn btn-info dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+
+                            <button @if(isset($isAllowToCreateUser) && !$isAllowToCreateUser) disabled title="Disabled | Limit Exceeded" @endif class="btn btn-info dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 <i class="fa fa-plus"></i> {{__('Add User')}}
                             </button>
+
                             <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                                 @if(auth()->user()->role_users_id == 1)
                                 <a class="dropdown-item" href="#" name="create_record" id="create_record">Add Admin</a>

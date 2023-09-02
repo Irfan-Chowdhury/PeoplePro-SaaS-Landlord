@@ -22,5 +22,4 @@ class Tenant extends BaseTenant implements TenantWithDatabase
             'expiry_date'
         ];
     }
-
 }

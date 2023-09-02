@@ -9,7 +9,7 @@
 
         <div class="container-fluid mb-3">
             @can('store-details-employee')
-                <button type="button" class="btn btn-info" name="create_record" id="create_record"><i
+                <button @if(isset($isAllowToCreateEmployee) && !$isAllowToCreateEmployee) disabled title="Disabled | Limit Exceeded" @endif  type="button" class="btn btn-info" name="create_record" id="create_record"><i
                             class="fa fa-plus"></i> {{__('Add Employee')}}</button>
             @endcan
             @can('modify-details-employee')

@@ -9,6 +9,6 @@ class GeneralSetting extends Model
     protected $fillable =[
 
         "site_title", "site_logo","time_zone","currency", "currency_position", "staff_access", "date_format",
-        "theme","footer","footer_link"
+        "theme","footer","footer_link","package_details"
     ];
 }

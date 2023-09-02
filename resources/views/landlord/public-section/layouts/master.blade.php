@@ -210,6 +210,9 @@
         }
     </style>
 
+    @stack('css')
+
+
     {{-- @if(isset($general_setting->fb_pixel_script))
     {!!$general_setting->fb_pixel_script!!}
     @endif --}}

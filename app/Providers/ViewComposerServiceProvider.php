@@ -2,7 +2,9 @@
 
 namespace App\Providers;
 
-use App\Models\GeneralSetting;
+use App\Models\GeneralSetting as TenantGeneralSetting;
+use App\Models\Landlord\GeneralSetting;
+use Carbon\Carbon;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Schema;
 class ViewComposerServiceProvider extends ServiceProvider
@@ -18,6 +20,7 @@ class ViewComposerServiceProvider extends ServiceProvider
     /**
      * Bootstrap services.
      */
+    // public function boot(): void
     public function boot(): void
     {
         if (Schema::hasTable('general_settings') && in_array(request()->getHost(), config('tenancy.central_domains'))) {
@@ -27,6 +30,15 @@ class ViewComposerServiceProvider extends ServiceProvider
                 'landlord.public-section.pages.landing-page.index',
             ], function ($view) use ($generalSetting) {
                 $view->with('generalSetting', $generalSetting);
+            });
+        }
+        else {
+            $general_settings = TenantGeneralSetting::latest()->first();
+
+            view()->composer([
+                'layout.main',
+            ], function ($view) use ($general_settings) {
+                $view->with('general_settings', $general_settings);
             });
         }
 

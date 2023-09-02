@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use function auth;
-
 class RouteClosureHandlerController extends Controller {
 
 	//

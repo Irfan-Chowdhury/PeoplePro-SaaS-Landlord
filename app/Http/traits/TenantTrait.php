@@ -2,6 +2,7 @@
 
 namespace App\Http\traits;
 
+use App\Models\GeneralSetting as TenantGeneralSetting;
 use App\Models\Landlord\GeneralSetting;
 use App\Models\Tenant;
 use App\Models\User;
@@ -124,7 +125,7 @@ trait TenantTrait {
         elseif($request->subscription_type == 'yearly')
             $numberOfDaysToExpired = 365;
 
-        $tenant = [
+        $tenantData = [
             'id' => $request->tenant,
             'tenancy_db_name' => $request->tenant,
             'customer_id' => $customer->id,
@@ -133,32 +134,55 @@ trait TenantTrait {
             'expiry_date' => date("Y-m-d", strtotime("+".$numberOfDaysToExpired." days"))
         ];
 
-        $tenant = Tenant::create($tenant);
+        $tenant = Tenant::create($tenantData);
         $tenant->domains()->create(['domain' => $request->tenant.'.'.env('CENTRAL_DOMAIN')]); // This Line
 
         $permissions = json_decode($package->permissions, true);
         $allPermissionIds = explode(',',$package->permission_ids);
+        // package_details
 
-        $tenant->run(function ($tenant) use ($request, $permissions, $customer, $allPermissionIds) {
+        $packageDetailsForTenant = [
+            'package_id' => $package->id,
+            'name' => $package->name,
+            'is_free_trial' => $package->is_free_trial,
+            'free_trial_limit' => $generalSetting->free_trial_limit,
+            'monthly_fee' => $package->monthly_fee,
+            'yearly_fee' => $package->yearly_fee,
+            'number_of_user_account' => $package->number_of_user_account,
+            'number_of_employee' => $package->number_of_employee,
+            'subscription_type'=> $request->subscription_type,
+            'expiry_date' => date("Y-m-d", strtotime("+".$numberOfDaysToExpired." days"))
+        ];
+
+        $tenant->run(function ($tenant) use ($request, $permissions, $allPermissionIds, $packageDetailsForTenant) {
             DB::table('permissions')->insert($permissions);
-
-            $user = User::create([
-                'first_name'=> $customer->first_name,
-                'last_name'=> $customer->last_name,
-                'username'=> $customer->username,
-                'email'=> $customer->email,
-                'contact_no'=> $customer->contact_no,
-                'role_users_id'=> 1,
-                'is_active'=> true,
-                'password'=> bcrypt($request->password)
-            ]);
-
+            $user = $this->tenantAdminCreate($request);
             $role = Role::findById(1);
 			$role->syncPermissions($allPermissionIds);
 			$user->syncRoles(1);
+
+
+            $tenantGeneralSetting = TenantGeneralSetting::latest()->first();
+            $tenantGeneralSetting->update([
+                'package_details' => json_encode($packageDetailsForTenant)
+            ]);
         });
     }
 
+
+    protected function tenantAdminCreate($request) : object
+    {
+        return User::create([
+            'first_name'=> $request->first_name,
+            'last_name'=> $request->last_name,
+            'username'=> $request->username,
+            'email'=> $request->email,
+            'contact_no'=> $request->contact_no,
+            'role_users_id'=> 1,
+            'is_active'=> true,
+            'password'=> bcrypt($request->password)
+        ]);
+    }
 }
 
 

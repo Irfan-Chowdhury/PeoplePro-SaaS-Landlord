@@ -1,11 +1,30 @@
 @extends('landlord.public-section.layouts.master')
 @section('public-content')
 
+@push('css')
+    <style>
+    .loading-icon {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(255, 255, 255, 0.8);
+        z-index: 9999;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .loading-icon i {
+        font-size: 40px;
+        color: #333;
+    }
+</style>
+@endpush
 
 
-    {{-- @if(session()->has('not_permitted'))
-      <div class="alert alert-danger alert-dismissible text-center">{{ session()->get('not_permitted') }}</div>
-    @endif --}}
+
     <!--Header-->
     <!--Header Area starts-->
     @if(!env('USER_VERIFIED'))
@@ -14,6 +33,9 @@
 
     <section class="hero mt-0">
         <div class="container">
+            <div id="loading-icon" class="loading-icon">
+                <i class="fa fa-spinner fa-spin"></i> Processing...
+            </div>
             <div class="row">
                 <div class="col-md-8 offset-md-2 text-center hero-text mb-5">
                     <h1 class="heading">{{$hero->heading}}</h1>
@@ -236,7 +258,7 @@
                     <input type="hidden" name="price">
 
                     <div class="col-6">
-                        <input class="form-control" type="text" name="first_name"  placeholder="First Name..." required>
+                        <input class="form-control" type="text" name="first_name"  placeholder="First Name..." >
                     </div>
                     <div class="col-6">
                         <input class="form-control" type="text" name="last_name"  placeholder="Last Name..." required>
@@ -272,7 +294,7 @@
                     </div>
                     <div class="col-12 mt-3">
                         <p id="waiting-msg mb-3"></p>
-                        <input id="submit-btn" type="submit" class="button style1 d-block w-100" value="{{trans('file.submit')}}">
+                        <input id="submitBtn" type="submit" class="button style1 d-block w-100" value="{{trans('file.submit')}}">
                     </div>
                 </form>
             </div>
@@ -362,13 +384,43 @@
             });
         });
 
+        $("#submitBtn").click(function(event){
+            // event.preventDefault();
+
+            // Call the function to start the task
+            simulateTimeConsumingTask();
+        });
+
+        // simulateTimeConsumingTask();
+
+        // Function to show the loading icon
+
+
     })(jQuery);
 </script>
 
+<script>
+    function showLoadingIcon() {
+        $('#loading-icon').css('display', 'flex');
+    }
+
+    function hideLoadingIcon() {
+        $('#loading-icon').css('display', 'none');
+    }
+
+    function simulateTimeConsumingTask() {
+        showLoadingIcon(); // Show the loading icon before the task starts
+        setTimeout(function () {
+        }, 3000);
+    }
+</script>
 
 @if ($errors->any())
     <script>
+        // hideLoadingIcon();
+
         $(document).ready(function() {
+            hideLoadingIcon();
             let errorMessages = @json($errors->all());
             htmlContent = "";
             errorMessages.forEach(function(errorMsg) {
@@ -383,6 +435,7 @@
 @if(session()->has('success'))
     <script>
         $(document).ready(function() {
+            hideLoadingIcon();
             displaySuccessMessage('{{ Session::get('success') }}');
         });
     </script>

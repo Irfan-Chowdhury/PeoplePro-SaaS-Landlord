@@ -18,7 +18,7 @@ class CustomerSignUpRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'first_name' => 'required|string|min:3',
+            'first_name' => 'required|string',
             'last_name' => 'required|string',
             'company_name' => 'required|string|min:3',
             'contact_no' => 'required|numeric',

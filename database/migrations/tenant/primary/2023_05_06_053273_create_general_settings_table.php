@@ -25,6 +25,7 @@ class CreateGeneralSettingsTable extends Migration
             $table->string('theme', 191)->nullable();
             $table->string('footer', 191)->nullable();
             $table->string('footer_link', 191)->nullable();
+            $table->json('package_details')->nullable();
             $table->timestamps();
         });
     }

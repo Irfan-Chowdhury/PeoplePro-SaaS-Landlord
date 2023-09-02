@@ -20,12 +20,6 @@ class CheckAdmin
 
 			return $next($request);
 		}
-		/*if(Auth::check() && Auth::user()->role_id==2){
-
-			return redirect("/employee/dashboard");
-		}
-		*/
-
 
         return redirect("/");
     }
