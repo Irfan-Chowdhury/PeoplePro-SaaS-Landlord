@@ -3,11 +3,18 @@
 # PeopleProSAAS (Landlord)
 </div>
 
+### Project Status : Ongoing...
+
 ## Visit
 - Demo : http://smarthishab.com/
 
-- Super Admin : smarthishab.com/super-admin
+### Landlord (Super Admin)
+- Login URL : http://smarthishab.com/super-admin
 - Super Admin Credentials : Username & Password both "admin"
+
+### Tenant -1
+- Login URL : http://foo.smarthishab.com/login
+- Super Admin Credentials : Username & Password both "arman"
 
 
 ## About
