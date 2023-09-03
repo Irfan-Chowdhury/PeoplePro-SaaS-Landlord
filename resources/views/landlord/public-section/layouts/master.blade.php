@@ -239,7 +239,7 @@
 
                             <li><a href="{{url('/')}}#faq">FAQ</a></li>
 
-                            <li><a href="{{url('/')}}#packages">Pricing</a></li>
+                            <li><a href="{{url('/')}}#packages">Prices</a></li>
 
                             <li><a href="{{url('/blogs')}}">Blogs</a></li>
                             {{-- @if(count($languages) > 1)
