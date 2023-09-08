@@ -2,6 +2,9 @@
 
 namespace App\Models;
 
+use App\Models\Landlord\Customer;
+use App\Models\Landlord\Domain;
+use App\Models\Landlord\Package;
 use Stancl\Tenancy\Database\Models\Tenant as BaseTenant;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -22,4 +25,21 @@ class Tenant extends BaseTenant implements TenantWithDatabase
             'expiry_date'
         ];
     }
+
+    public function customer()
+    {
+        return $this->belongsTo(Customer::class);
+    }
+
+    public function package()
+    {
+        return $this->belongsTo(Package::class);
+    }
+
+    public function domainInfo()
+    {
+        return $this->hasOne(Domain::class, 'tenant_id');
+    }
+
+
 }

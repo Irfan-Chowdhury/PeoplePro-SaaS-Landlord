@@ -4,6 +4,7 @@ namespace App\Repositories;
 
 use App\Contracts\BaseContract;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Collection;
 
 class BaseRepository implements BaseContract
 {
@@ -17,6 +18,11 @@ class BaseRepository implements BaseContract
     public function all()
     {
         return $this->model->all();
+    }
+
+    public function getSelectData($selectedData) : Collection
+    {
+        return $this->model->select($selectedData)->get();
     }
 
     // BlogController
@@ -95,7 +101,7 @@ class BaseRepository implements BaseContract
         return $this->model->orderBy('position','ASC')->get();
     }
 
-    // ModuleController || TenantSignUpController || SettingController: 
+    // ModuleController || TenantSignUpController || SettingController:
     public function updateOrCreate($condition, $data) : void
     {
         $this->model->updateOrCreate($condition, $data);

@@ -97,7 +97,6 @@ class RoleController extends Controller {
 
 	public function edit($id)
 	{
-
 		if (request()->ajax())
 		{
 			$data = Role::findOrFail($id);

@@ -19,6 +19,7 @@ use App\Contracts\PaymentSettingContract;
 use App\Contracts\PermissionContract;
 use App\Contracts\SeoSettingContract;
 use App\Contracts\SocialContract;
+use App\Contracts\TenantContract;
 use App\Contracts\TenantSignupDescriptionContract;
 use App\Contracts\TestimonialContract;
 use App\Repositories\AnalyticSettingRepository;
@@ -38,6 +39,7 @@ use App\Repositories\PaymentSettingRepository;
 use App\Repositories\PermissionRepository;
 use App\Repositories\SeoSettingRepository;
 use App\Repositories\SocialRepository;
+use App\Repositories\TenantRepository;
 use App\Repositories\TenantSignupDescriptionRepository;
 use App\Repositories\TestimonialRepository;
 use Illuminate\Support\ServiceProvider;
@@ -65,6 +67,7 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(MailSettingContract::class, MailSettingRepository::class);
         $this->app->bind(PackageContract::class, PackageRepository::class);
         $this->app->bind(PermissionContract::class, PermissionRepository::class);
+        $this->app->bind(TenantContract::class, TenantRepository::class);
     }
 
 

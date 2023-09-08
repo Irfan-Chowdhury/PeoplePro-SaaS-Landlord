@@ -8,12 +8,10 @@
     </span>
     <ul id="side-main-menu" class="side-menu list-unstyled">
         <li><a href="#"> <i class="dripicons-meter"></i><span>{{ __('file.dashboard') }}</span></a></li>
-        <li><a target="_blank" href=""> <i class="dripicons-monitor"></i><span>Frontend</span></a></li>
-        <li><a href="#client" aria-expanded="false" data-toggle="collapse"> <i class="dripicons-list"></i><span>{{trans('file.Client')}}</span><span></a>
-            <ul id="client" class="collapse list-unstyled ">
-                <li id="client-list-menu"><a href="">{{trans('file.Client List')}}</a></li>
-            </ul>
-        </li>
+        <li><a target="_blank" href="{{ route('landingPage.index') }}"> <i class="dripicons-monitor"></i><span>Frontend</span></a></li>
+
+        <li><a href="{{ route('customer.index') }}"><i class="dripicons-list"></i> {{trans('file.Customers')}}</a></li>
+
         <li><a href=""><i class="dripicons-card"></i> {{trans('file.Payments')}}</a></li>
         <li><a href="#package" aria-expanded="false" data-toggle="collapse"> <i class="dripicons-archive"></i><span>{{trans('file.Package')}}</span><span></a>
             <ul id="package" class="collapse list-unstyled ">

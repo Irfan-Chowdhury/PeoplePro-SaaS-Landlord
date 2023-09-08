@@ -12,15 +12,19 @@ use App\Contracts\SocialContract;
 use App\Contracts\TenantSignupDescriptionContract;
 use App\Contracts\TestimonialContract;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Customer\RenewSubscriptionRequest;
 use App\Http\traits\PermissionHandleTrait;
 use App\Models\Landlord\Hero;
+use App\Models\Landlord\Package;
 use App\Models\Landlord\Page;
 use App\Models\Landlord\Social;
 use App\Models\Tenant;
 use App\Services\SocialService;
+use Exception;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
+use Spatie\Permission\Models\Role;
 
 class LandingPageController extends Controller
 {
@@ -113,5 +117,14 @@ class LandingPageController extends Controller
         $pages =  $this->pageContract->getAllByLanguageId($this->languageId); //Common
 
         return view('landlord.public-section.pages.pages.page-details',compact('socials', 'page', 'pages'));
+    }
+
+    public function contactForRenewal(PackageContract $packageContract)
+    {
+        $socials = $this->socialContract->getOrderByPosition(); //Common
+        $pages =  $this->pageContract->getAllByLanguageId($this->languageId); //Common
+        $packages = $packageContract->getSelectData(['id','name']);
+
+        return view('landlord.public-section.pages.renew.contact_for_renewal', compact('socials','pages','packages'));
     }
 }

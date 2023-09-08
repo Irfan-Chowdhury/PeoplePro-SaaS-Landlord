@@ -127,7 +127,7 @@ trait TenantTrait {
 
         $tenantData = [
             'id' => $request->tenant,
-            'tenancy_db_name' => $request->tenant,
+            'tenancy_db_name' => env('DB_PREFIX').$request->tenant,
             'customer_id' => $customer->id,
             'package_id' => $package->id,
             'subscription_type'=> $request->subscription_type,
@@ -141,7 +141,90 @@ trait TenantTrait {
         $allPermissionIds = explode(',',$package->permission_ids);
         // package_details
 
-        $packageDetailsForTenant = [
+        $packageDetailsForTenant =  $this->packageDetailsForTenant($package, $generalSetting, $request);
+        $packageDetailsForTenant['expiry_date'] = date("Y-m-d", strtotime("+".$numberOfDaysToExpired." days"));
+
+        $tenant->run(function ($tenant) use ($request, $permissions, $allPermissionIds, $packageDetailsForTenant) {
+            DB::table('permissions')->insert($permissions);
+            $user = $this->tenantAdminCreate($request);
+            $role = Role::findById(1);
+			$role->syncPermissions($allPermissionIds);
+			$user->syncRoles(1);
+
+            $this->setDataInTenantGeneralSetting($packageDetailsForTenant);
+        });
+    }
+
+    // public function createTenant($request, $customer, $package)
+    // {
+
+    //     $generalSetting = GeneralSetting::latest()->first();
+
+    //     if($package->is_free_trial)
+    //         $numberOfDaysToExpired = $generalSetting->free_trial_limit;
+    //     elseif($request->subscription_type == 'monthly')
+    //         $numberOfDaysToExpired = 30;
+    //     elseif($request->subscription_type == 'yearly')
+    //         $numberOfDaysToExpired = 365;
+
+    //     $tenant = [
+    //         'id' => $request->tenant,
+    //         'tenancy_db_name' => env('DB_PREFIX').$request->tenant,
+    //         'customer_id' => $customer->id,
+    //         'package_id' => $package->id,
+    //         'subscription_type'=> $request->subscription_type,
+    //         'expiry_date' => date("Y-m-d", strtotime("+".$numberOfDaysToExpired." days"))
+    //     ];
+
+    //     $packageDetailsForTenant =  $this->packageDetailsForTenant($package, $generalSetting, $request);
+    //     $packageDetailsForTenant['expiry_date'] = date("Y-m-d", strtotime("+".$numberOfDaysToExpired." days"));
+
+
+    //     $tenant = Tenant::create($tenant);
+    //     $tenant->domains()->create(['domain' => $request->tenant.'.'.env('CENTRAL_DOMAIN')]); // This Line
+
+
+    //     $permissions = json_decode($package->permissions, true);
+    //     $allPermissionIds = explode(',',$package->permission_ids);
+    //     $tenant->run(function ($tenant) use ($request, $permissions, $customer, $allPermissionIds) {
+    //         DB::table('permissions')->insert($permissions);
+
+    //         $user = User::create([
+    //             'first_name'=> $customer->first_name,
+    //             'last_name'=> $customer->last_name,
+    //             'username'=> $customer->username,
+    //             'email'=> $customer->email,
+    //             'contact_no'=> $customer->contact_no,
+    //             'role_users_id'=> 1,
+    //             'is_active'=> true,
+    //             'password'=> bcrypt($request->password)
+    //         ]);
+
+    //         $role = Role::findById(1);
+	// 		$role->syncPermissions($allPermissionIds);
+	// 		$user->syncRoles(1);
+
+    //         $this->setDataInTenantGeneralSetting($packageDetailsForTenant);
+
+    //     });
+    // }
+
+
+
+
+
+    protected function setDataInTenantGeneralSetting($packageDetailsForTenant) : void
+    {
+        $tenantGeneralSetting = TenantGeneralSetting::latest()->first();
+        $tenantGeneralSetting->update([
+            'package_details' => json_encode($packageDetailsForTenant)
+        ]);
+    }
+
+
+    public function packageDetailsForTenant($package, $generalSetting, $request)
+    {
+        return [
             'package_id' => $package->id,
             'name' => $package->name,
             'is_free_trial' => $package->is_free_trial,
@@ -151,22 +234,7 @@ trait TenantTrait {
             'number_of_user_account' => $package->number_of_user_account,
             'number_of_employee' => $package->number_of_employee,
             'subscription_type'=> $request->subscription_type,
-            'expiry_date' => date("Y-m-d", strtotime("+".$numberOfDaysToExpired." days"))
         ];
-
-        $tenant->run(function ($tenant) use ($request, $permissions, $allPermissionIds, $packageDetailsForTenant) {
-            DB::table('permissions')->insert($permissions);
-            $user = $this->tenantAdminCreate($request);
-            $role = Role::findById(1);
-			$role->syncPermissions($allPermissionIds);
-			$user->syncRoles(1);
-
-
-            $tenantGeneralSetting = TenantGeneralSetting::latest()->first();
-            $tenantGeneralSetting->update([
-                'package_details' => json_encode($packageDetailsForTenant)
-            ]);
-        });
     }
 
 

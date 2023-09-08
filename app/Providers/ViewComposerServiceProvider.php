@@ -28,6 +28,7 @@ class ViewComposerServiceProvider extends ServiceProvider
             view()->composer([
                 'landlord.public-section.layouts.master',
                 'landlord.public-section.pages.landing-page.index',
+                'landlord.public-section.pages.renew.contact_for_renewal',
             ], function ($view) use ($generalSetting) {
                 $view->with('generalSetting', $generalSetting);
             });

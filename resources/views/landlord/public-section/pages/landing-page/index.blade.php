@@ -258,7 +258,7 @@
                     <input type="hidden" name="price">
 
                     <div class="col-6">
-                        <input class="form-control" type="text" name="first_name"  placeholder="First Name..." >
+                        <input class="form-control" type="text" name="first_name"  placeholder="First Name..." required>
                     </div>
                     <div class="col-6">
                         <input class="form-control" type="text" name="last_name"  placeholder="Last Name..." required>
@@ -270,20 +270,20 @@
                         <input class="form-control" type="email" name="email"  placeholder="Email..." required>
                     </div>
                     <div class="col-md-6">
-                        <input class="form-control" type="text" name="username"  placeholder="Username..." >
+                        <input class="form-control" type="text" name="username"  placeholder="Username..." required>
                     </div>
                     <div class="col-6">
                         <input class="form-control" type="text" name="company_name"  placeholder="Company Name..." required>
                     </div>
                     <div class="col-md-6">
-                        <input class="form-control" type="password" name="password"  placeholder="Password...">
+                        <input class="form-control" type="password" name="password"  placeholder="Password..." required>
                     </div>
                     <div class="col-md-6">
-                        <input class="form-control" type="password" name="password_confirmation"  placeholder="Confirm Password...">
+                        <input class="form-control" type="password" name="password_confirmation"  placeholder="Confirm Password..." required>
                     </div>
                     <div class="col-md-12">
                         <div class="input-group mt-3">
-                            <input class="form-control mt-0" type="text" name="tenant"  placeholder="Subdomain..." aria-label="ubdomain..." aria-describedby="basic-addon2">
+                            <input required class="form-control mt-0" type="text" name="tenant"  placeholder="Subdomain..." aria-label="ubdomain..." aria-describedby="basic-addon2">
                           <span class="input-group-text" id="basic-addon2">{{'@'.env('CENTRAL_DOMAIN')}}</span>
                         </div>
                     </div>
@@ -417,8 +417,6 @@
 
 @if ($errors->any())
     <script>
-        // hideLoadingIcon();
-
         $(document).ready(function() {
             hideLoadingIcon();
             let errorMessages = @json($errors->all());
@@ -441,7 +439,4 @@
     </script>
 @endif
 <script type="text/javascript" src="{{ asset('js/landlord/common-js/alertMessages.js') }}"></script>
-
-
-
 @endpush

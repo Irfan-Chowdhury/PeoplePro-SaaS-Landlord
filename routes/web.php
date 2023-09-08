@@ -19,7 +19,7 @@ use App\Http\Controllers\Landlord\TenantSignupDescriptionController;
 use App\Http\Controllers\Landlord\TestimonialController;
 use App\Http\Controllers\Landlord\TranslationController;
 use App\Http\Controllers\LanguageSettingController;
-use App\Http\Controllers\Landlord\CustomerController;
+use App\Http\Controllers\Landlord\TenantController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Session;
 
@@ -48,13 +48,16 @@ Route::middleware(['setPublicLocale'])->group(function () {
         Route::get('/blogs', 'blog')->name('landingPage.blog');
         Route::get('/blogs/{slug}', 'blogDetail')->name('landingPage.blogDetail');
         Route::get('/pages/{slug}', 'pageDetails')->name('landingPage.pageDetail');
+        Route::get('/contact-for-renewal', 'contactForRenewal')->name('landingPage.contact_for_renewal');
     });
 });
 
 // tenant.checkout
-Route::controller(CustomerController::class)->group(function () {
+Route::controller(TenantController::class)->group(function () {
     Route::post('/customer-signup', 'customerSignUp')->name('customer.signup')->middleware('demoCheck');
+    Route::post('/contact-for-renewal', 'renewSubscription')->name('renew_subscription')->middleware('demoCheck');
 });
+
 
 
 Route::get('/super-admin', [AdminController::class, 'showLoginForm'])->name('landlord.login')->middleware('guest');
@@ -65,6 +68,18 @@ Route::middleware(['web','auth','setLocale'])->group(function () {
     Route::prefix('super-admin')->group(function () {
 
         Route::get('dashboard',[DashboardController::class, 'index'])->name('landlord.dashboard');
+
+
+        Route::controller(TenantController::class)->group(function () {
+            Route::prefix('customers')->group(function () {
+                Route::get('/', 'index')->name('customer.index');
+                Route::get('/datatable', 'datatable')->name('customer.datatable');
+                Route::get('/tenant-info/{tenant}', 'tenantInfo')->name('customer.tenant_info');
+                Route::post('/renew-subscription/{tenant}', 'renewSubscriptionUpdate')->name('customer.renew_subscription_update')->middleware('demoCheck');
+                Route::post('/change-package/{tenant}', 'changePackageProcess')->name('customer.change_package')->middleware('demoCheck');
+                Route::get('/destroy/{tenant}', 'destroy')->name('customer.destroy')->middleware('demoCheck');
+            });
+        });
 
         Route::prefix('packages')->group(function () {
             Route::controller(PackageController::class)->group(function () {

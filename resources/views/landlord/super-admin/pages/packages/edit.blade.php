@@ -99,8 +99,13 @@
 
                                     <input type="hidden" name="features[]" id="features">
 
+
+                                    <div class="col-md-12 form-group mt-5">
+                                        <input type="checkbox" name="is_update_existing" value="1">&nbsp; <strong>{{trans('file.Update existing customers who are using this package')}}</strong>
+                                    </div>
+
                                     <div class="col-md-12 mt-2">
-                                        <button type="submit" class="btn btn-primary">{{ trans('file.submit') }}</button>
+                                        <button type="submit" id="updateButton" class="btn btn-primary">{{ trans('file.Update') }}</button>
                                     </div>
                                 </div>
                             </form>
@@ -141,71 +146,71 @@
                     {
                         id: 'user',
                         text: "{{trans('User')}}",
-                        checked: ($.inArray('user', permissionNames) >= 0) ? true : false,
+                        checked: true,
                     },
                     {
                         id: 'details-employee',
                         text: "{{trans('Employee Details')}}",
-                        checked: ($.inArray('details-employee', permissionNames) >= 0) ? true : false,
+                        checked: true,
                     },
 
                     {
                         id: 'customize-setting',
                         text: "{{__('Customize Setting')}}",
                         expanded: true,
-                        checked: ($.inArray('customize-setting', permissionNames) >= 0) ? true : false,
+                        checked: true,
                         items: [
                             {
                                 id: 'role',
                                 text: "{{trans('Role')}}",
-                                checked: ($.inArray('role', permissionNames) >= 0) ? true : false,
+                                checked: true,
                             },
                             {
                                 id: 'general-setting',
                                 text: "{{__('General Setting')}}",
-                                checked: ($.inArray('general-setting', permissionNames) >= 0) ? true : false,
+                                checked: true,
                             },
                             {
                                 id: 'mail-setting',
                                 text: "{{__('Mail Setting')}}",
-                                checked: ($.inArray('mail-setting', permissionNames) >= 0) ? true : false,
+                                checked: true,
                             },
                             {
                                 id: 'access-variable_type',
                                 text: '{{__('Access Variable Type')}}',
-                                checked: ($.inArray('access-variable_type', permissionNames) >= 0) ? true : false,
+                                checked: true,
                             },
                             {
                                 id: 'access-variable_method',
                                 text: '{{__('Access Variable Method')}}',
-                                checked: ($.inArray('access-variable_method', permissionNames) >= 0) ? true : false,
+                                checked: true,
                             },
                             {
                                 id: 'access-language',
                                 text: '{{__('Access Language')}}',
-                                checked: ($.inArray('access-language', permissionNames) >= 0) ? true : false,
+                                checked: true,
                             },
                         ]
                     },
                     {
                         id: 'company',
                         text: "{{trans('Company')}}",
-                        checked: ($.inArray('company', permissionNames) >= 0) ? true : false,
+                        checked: true,
                     },
                     {
                         id: 'department',
                         text: "{{trans('Department')}}",
-                        checked: ($.inArray('department', permissionNames) >= 0) ? true : false,
+                        checked: true,
                     },
                     {
                         id: 'designation',
                         text: "{{trans('Designation')}}",
-                        checked: ($.inArray('designation', permissionNames) >= 0) ? true : false,
+                        checked: true,
                     },
                     {
                         id: 'location',
                         text: "{{trans('Location')}}",
-                        checked: ($.inArray('location', permissionNames) >= 0) ? true : false,
+                        checked: true,
                     },
 
                     {
@@ -291,7 +296,7 @@
                             {
                                 id: 'office_shift',
                                 text: "{{trans('Office Shift')}}",
-                                checked: ($.inArray('office_shift', permissionNames) >= 0) ? true : false,
+                                checked: true,
                             },
 
                             {

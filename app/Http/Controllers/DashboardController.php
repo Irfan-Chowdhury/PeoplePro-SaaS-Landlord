@@ -452,8 +452,6 @@ class DashboardController extends Controller {
 
 	public function employeeDashboard(Request $request)
 	{
-        // return EmployeeWorkExperience::where('employee_id', 52)->get();
-
 		$user = auth()->user();
 		$employee = Employee::with('department:id,department_name', 'officeShift')->findOrFail($user->id);
 		$current_day_in = strtolower(Carbon::now()->format('l')) . '_in';
@@ -519,7 +517,6 @@ class DashboardController extends Controller {
                 $assigned_tickets_count++;
             }
         }
-
 
 
 		//checking if emoloyee has attendance on current day

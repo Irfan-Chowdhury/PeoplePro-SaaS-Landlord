@@ -75,12 +75,12 @@
                 </form>
                 <!-- This three buttons for demo only-->
 
-                @if (env('APP_ENV')=="local")
+                {{-- @if (env('APP_ENV')=="local")
                     <button type="submit" class="btn btn-success btn-sm default admin-btn">LogIn as Admin</button>
                     <button type="submit" class="btn btn-info btn-sm default staff-btn">LogIn as Staff</button>
                     <button type="submit" class="btn btn-warning btn-sm default client-btn">LogIn as Client</button>
                     <p class="text-center mt-4 text-danger font-weight-bold font-italic">[For attendance device related features, Need to purchase attendance device addon.]</p>
-                @endif
+                @endif --}}
 
                 <br><br>
                 @if (Route::has('password.request'))
