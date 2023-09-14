@@ -14,6 +14,7 @@ use App\Http\Controllers\Landlord\LanguageController;
 use App\Http\Controllers\Landlord\ModuleController;
 use App\Http\Controllers\Landlord\PackageController;
 use App\Http\Controllers\Landlord\PageController;
+use App\Http\Controllers\Landlord\PaymentController;
 use App\Http\Controllers\Landlord\SocialController;
 use App\Http\Controllers\Landlord\TenantSignupDescriptionController;
 use App\Http\Controllers\Landlord\TestimonialController;
@@ -48,14 +49,23 @@ Route::middleware(['setPublicLocale'])->group(function () {
         Route::get('/blogs', 'blog')->name('landingPage.blog');
         Route::get('/blogs/{slug}', 'blogDetail')->name('landingPage.blogDetail');
         Route::get('/pages/{slug}', 'pageDetails')->name('landingPage.pageDetail');
-        Route::get('/contact-for-renewal', 'contactForRenewal')->name('landingPage.contact_for_renewal');
     });
 });
 
 // tenant.checkout
 Route::controller(TenantController::class)->group(function () {
     Route::post('/customer-signup', 'customerSignUp')->name('customer.signup')->middleware('demoCheck');
+    Route::get('/contact-for-renewal', 'contactForRenewal')->name('contact_for_renewal');
     Route::post('/contact-for-renewal', 'renewSubscription')->name('renew_subscription')->middleware('demoCheck');
+});
+//
+
+Route::controller(PaymentController::class)->group(function () {
+    Route::post('/payment/{paymentMethod}/pay', 'paymentPayPage')->name('payment.pay.page');
+    Route::post('payment/{paymentMethod}/pay/process', 'paymentProcessWithTenantAndLandlord')->name('payment.pay.process');
+    // Route::post('payment/{paymentMethod}/pay/confirm', 'paymentPayConfirm')->name('payment.pay.confirm');
+    Route::post('payment/{paymentMethod}/pay/cancel', 'paymentPayCancel')->name('payment.pay.cancel');
+    Route::get('payment-success/{domain}', 'paymentSuccess')->name('payment.success');
 });
 
 
@@ -75,7 +85,7 @@ Route::middleware(['web','auth','setLocale'])->group(function () {
                 Route::get('/', 'index')->name('customer.index');
                 Route::get('/datatable', 'datatable')->name('customer.datatable');
                 Route::get('/tenant-info/{tenant}', 'tenantInfo')->name('customer.tenant_info');
-                Route::post('/renew-subscription/{tenant}', 'renewSubscriptionUpdate')->name('customer.renew_subscription_update')->middleware('demoCheck');
+                Route::post('/renew-subscription/{tenant}', 'renewExpiryUpdate')->name('customer.renew_subscription_update')->middleware('demoCheck');
                 Route::post('/change-package/{tenant}', 'changePackageProcess')->name('customer.change_package')->middleware('demoCheck');
                 Route::get('/destroy/{tenant}', 'destroy')->name('customer.destroy')->middleware('demoCheck');
             });

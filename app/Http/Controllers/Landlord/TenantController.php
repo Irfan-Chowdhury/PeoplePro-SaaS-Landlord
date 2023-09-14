@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Landlord;
 
 use App\Contracts\PackageContract;
+use App\Contracts\PageContract;
+use App\Contracts\SocialContract;
 use App\Events\CustomerRegistered;
 use App\Facades\Alert;
 use App\Http\traits\TenantTrait;
@@ -12,11 +14,14 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Tenant\CustomerSignUpRequest;
 use App\Http\Requests\Tenant\RenewExpiryDataRequest;
 use App\Http\Requests\Tenant\RenewSubscriptionRequest;
+use App\Http\traits\PaymentTrait;
+use App\Http\traits\PermissionHandleTrait;
 use App\Mail\ConfirmationEmail;
 use App\Models\Landlord\Customer;
 use App\Models\Landlord\GeneralSetting;
 use App\Models\Tenant;
 use App\Models\User;
+use App\Services\TenantService;
 use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
@@ -27,8 +32,22 @@ class TenantController extends Controller
 {
     use TenantTrait;
 
-    public function __construct(public PackageContract $packageContract)
-    {}
+    public $languageId;
+    use PermissionHandleTrait;
+    use PaymentTrait;
+
+    public function __construct(
+        public SocialContract $socialContract,
+        public PageContract $pageContract,
+        public PackageContract $packageContract,
+        public TenantService $tenantService
+    )
+    {
+        $this->middleware(function ($request, $next){
+            $this->languageId = Session::has('TempPublicLangId')==true ? Session::get('TempPublicLangId') : Session::get('DefaultSuperAdminLangId');
+            return $next($request);
+        });
+    }
 
     public function index()
     {
@@ -84,12 +103,17 @@ class TenantController extends Controller
     {
         DB::beginTransaction();
         try {
+            $paymentMethodList = array_column($this->paymentMethods(), 'payment_method');
+            if(!$request->is_free_trail && in_array($request->payment_method ,$paymentMethodList)) {
+                return redirect(route("payment.pay.page",$request->payment_method), 307);
+            }
 
-            $this->tenantGenerate($request);
+            // $this->tenantGenerate($request);
+            $this->tenantService->NewTenantGenerate($request);
 
             DB::commit();
-            $result =  Alert::successMessage('Data Created Successfully');
 
+            $result =  Alert::successMessage('Data Created Successfully');
             if (request()->ajax()) {
                 return response()->json($result['alertMsg'], $result['statusCode']);
             } else {
@@ -115,7 +139,7 @@ class TenantController extends Controller
         return response()->json($tenant);
     }
 
-    public function renewSubscriptionUpdate(RenewExpiryDataRequest $request, Tenant $tenant)
+    public function renewExpiryUpdate(RenewExpiryDataRequest $request, Tenant $tenant)
     {
         DB::beginTransaction();
         try {
@@ -150,7 +174,8 @@ class TenantController extends Controller
         DB::beginTransaction();
         try {
 
-            $this->permissionUpdate($tenant, $request);
+            $package = Package::find($request->package_id);
+            $this->permissionUpdate($tenant, $request, $package);
 
             $result =  Alert::successMessage('Package Switched Successfully');
             DB::commit();
@@ -162,7 +187,6 @@ class TenantController extends Controller
 
         return response()->json($result['alertMsg'], $result['statusCode']);
     }
-
 
     protected function tenantGenerate($request) : void
     {
@@ -205,13 +229,39 @@ class TenantController extends Controller
         return response()->json($result['alertMsg'], $result['statusCode']);
     }
 
+    public function contactForRenewal(PackageContract $packageContract)
+    {
+        $socials = $this->socialContract->getOrderByPosition(); //Common
+        $pages =  $this->pageContract->getAllByLanguageId($this->languageId); //Common
+        $packages = $packageContract->getSelectData(['id','name']);
+        $paymentMethods = $this->paymentMethods();
+
+        return view('landlord.public-section.pages.renew.contact_for_renewal', compact('socials','pages','packages','paymentMethods'));
+    }
+
+
     public function renewSubscription(RenewSubscriptionRequest $request)
     {
         DB::beginTransaction();
         try {
-            $tenant = Tenant::find($request->tenant_id);
+            $package = Package::find($request->package_id);
 
-            $this->permissionUpdate($tenant, $request);
+            if($request->subscription_type == 'monthly')
+                $request->session()->put('price', $package->monthly_fee);
+            else
+                $request->session()->put('price', $package->yearly_fee);
+
+
+            $paymentMethodList = array_column($this->paymentMethods(), 'payment_method');
+            if(!$request->is_free_trail && in_array($request->payment_method ,$paymentMethodList)) {
+                return redirect(route("payment.pay.page",$request->payment_method), 307);
+            }
+
+            // if ($request->payment_method === 'stripe' || $request->payment_method === 'paypal')
+            //     return redirect(route("payment.pay.page",$request->payment_method), 307);
+
+            $tenant = Tenant::find($request->tenant_id);
+            $this->tenantService->permissionUpdate($tenant, $request, $package);
 
             DB::commit();
             return redirect()->back()->with(['success' => 'Data Created Successfully']);
@@ -223,15 +273,11 @@ class TenantController extends Controller
         }
     }
 
-    protected function permissionUpdate($tenant, $request)
+    protected function permissionUpdate($tenant, $request, $package)
     {
         $prevPermissions = json_decode($tenant->package->permissions, true);
         $prevPermissionIds = array_column($prevPermissions, 'id');
 
-        $tenant->package_id = $request->package_id;
-        $tenant->update();
-
-        $package = Package::find($request->package_id);
         $latestPermissions = json_decode($package->permissions, true);
         $latestPermissionsIds = array_column($latestPermissions, 'id');
 
@@ -242,7 +288,9 @@ class TenantController extends Controller
             }
         }
 
-        $tenant->run(function ($tenant) use ($newAddedPermissions, $latestPermissionsIds) {
+        $tenant->package_id = $request->package_id;
+        $tenant->update();
+        $tenant->run(function () use ($newAddedPermissions, $latestPermissionsIds) {
             DB::table('permissions')->whereNotIn('id', $latestPermissionsIds)->delete();
             DB::table('permissions')->insert($newAddedPermissions);
             $role = Role::findById(1);
@@ -250,7 +298,9 @@ class TenantController extends Controller
         });
     }
 
-    public function test()
+
+
+    public function test($tenant, $package)
     {
         // Update --
         // $tenant = Tenant::find('saastest24');
@@ -260,15 +310,90 @@ class TenantController extends Controller
         //     $user->update();
         // });
 
-
-
         // Delete --
         // $tenant = Tenant::find('saastest1');
         // $tenant->domainInfo->delete();
         // $tenant->delete();
         // return 'ok';
+
+        // ========== Test ============
+        // $prevPermissionIds = [1,2,3,4,5];
+        // $latestPermissionsIds = [1,2,3,6,7,8];
+
+        // $skipIds = [];
+        // foreach ($prevPermissionIds as $element) {
+        //     if (!in_array($element, $latestPermissionsIds)) {
+        //         $skipIds[] = $element;
+        //     }
+        // }
+        // return $skipIds;
+
+        // $newIds = [];
+        // foreach ($array2 as $element) {
+        //     if (!in_array($element, $array1)) {
+        //         $newIds[] = $element;
+        //     }
+        // }
+        // return $newIds;
+        // return $expectedResult = array_merge($expectedResult, $array2);
+        // $expectedResult = [1,2,3,6,7,8];
+
+        $prevPermissions = json_decode($tenant->package->permissions, true);
+        $prevPermissionIds = array_column($prevPermissions, 'id');
+
+        $latestPermissions = json_decode($package->permissions, true);
+        $latestPermissionsIds = array_column($latestPermissions, 'id');
+
+        $skipIds = [];
+        foreach ($prevPermissionIds as $element) {
+            if (!in_array($element, $latestPermissionsIds)) {
+                $skipIds[] = $element;
+            }
+        }
+
+        $newPermissions = [];
+        foreach ($latestPermissions as $element) {
+            if (!in_array($element["id"], $prevPermissionIds)) {
+                $newPermissions[] = $element;
+            }
+        }
+
+        // $permissions = DB::table('permissions')->get()->toArray();
+        // $permissionsIds = array_column($permissions, 'id');
+        // return count($latestPermissionsIds);
+
+
+        // return count($latestPermissions).' | '.count($latestPermissionsIds);
+
+        $test = null;
+        $tenant->run(function () use ($skipIds, $newPermissions, $latestPermissions, $latestPermissionsIds, &$test) {
+            if(!empty($newPermissions)) {
+                DB::table('permissions')->whereIn('id', $skipIds)->delete();
+                $test = DB::table('permissions')->insert($newPermissions);
+                $role = Role::findById(1);
+                $role->syncPermissions($latestPermissionsIds);
+            }
+            // DB::table('permissions')->insert($latestPermissions);
+            // $test =  $role = Role::findById(1);
+            // $role->syncPermissions($latestPermissionsIds);
+            // $role->syncPermissions($latestPermissionsIds);
+            // $test = DB::table('permissions')->whereIn('id', $skipIds)->pluck('id','name');
+            // $test = DB::table('permissions')->whereNotIn('id', $latestPermissionsIds)->pluck('id','name');
+        });
+        return $test;
+
+        return DB::table('permissions')->whereNotIn('id', $latestPermissionsIds)->pluck('id','name');
+
+
+
+        if (empty(array_diff($prevPermissionIds, $latestPermissionsIds)) && empty(array_diff($latestPermissionsIds, $prevPermissionIds))) {
+            return "Arrays are equal.";
+        } else {
+            return "Arrays are not equal.";
+        }
+        // ========== Test ============
     }
 
+    // sudo php artisan cache:clear
     // php artisan cache:forget spatie.permission.cache
-    // php artisan cache:clear
 }

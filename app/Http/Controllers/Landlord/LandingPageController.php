@@ -13,6 +13,7 @@ use App\Contracts\TenantSignupDescriptionContract;
 use App\Contracts\TestimonialContract;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Customer\RenewSubscriptionRequest;
+use App\Http\traits\PaymentTrait;
 use App\Http\traits\PermissionHandleTrait;
 use App\Models\Landlord\Hero;
 use App\Models\Landlord\Package;
@@ -31,6 +32,7 @@ class LandingPageController extends Controller
 
     public $languageId;
     use PermissionHandleTrait;
+    use PaymentTrait;
 
     public function __construct(
         public SocialContract $socialContract,
@@ -85,10 +87,11 @@ class LandingPageController extends Controller
 
         $saasFeatures =  $this->features();
         $packages = $packageContract->all();
+        $paymentMethods = $this->paymentMethods();
 
         return view('landlord.public-section.pages.landing-page.index',compact([
             'socials','hero','module','features','faq','testimonials','tenantSignupDescription',
-            'blogs','pages', 'saasFeatures','packages'
+            'blogs','pages', 'saasFeatures','packages','paymentMethods'
         ]));
     }
 
@@ -117,14 +120,5 @@ class LandingPageController extends Controller
         $pages =  $this->pageContract->getAllByLanguageId($this->languageId); //Common
 
         return view('landlord.public-section.pages.pages.page-details',compact('socials', 'page', 'pages'));
-    }
-
-    public function contactForRenewal(PackageContract $packageContract)
-    {
-        $socials = $this->socialContract->getOrderByPosition(); //Common
-        $pages =  $this->pageContract->getAllByLanguageId($this->languageId); //Common
-        $packages = $packageContract->getSelectData(['id','name']);
-
-        return view('landlord.public-section.pages.renew.contact_for_renewal', compact('socials','pages','packages'));
     }
 }

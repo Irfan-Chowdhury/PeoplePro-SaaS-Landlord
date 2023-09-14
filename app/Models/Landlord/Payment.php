@@ -11,7 +11,10 @@ class Payment extends Model
 
     protected $fillable = [
         'tenant_id',
+        'package_id',
         'amount',
-        'paid_by'
+        'payment_method',
+        'subscription_type',
+        'data'
     ];
 }

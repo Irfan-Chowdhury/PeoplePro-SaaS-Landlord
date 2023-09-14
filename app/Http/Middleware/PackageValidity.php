@@ -24,7 +24,7 @@ class PackageValidity
         $currentDate = Carbon::now();
         $expireDate = Carbon::parse($packageDetail->expiry_date);
         if ($currentDate->gte($expireDate)) {//greater than or equal
-            abort(403);
+            return redirect()->route('contact_for_renewal');
         }
         else {
             if ($request->is('/users-list')) {

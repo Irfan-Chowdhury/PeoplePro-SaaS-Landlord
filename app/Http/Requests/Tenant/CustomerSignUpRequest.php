@@ -17,7 +17,7 @@ class CustomerSignUpRequest extends FormRequest
 
     public function rules(): array
     {
-        return [
+        $data = [
             'package_id' => 'required',
             'first_name' => 'required|string',
             'last_name' => 'required|string',
@@ -28,6 +28,12 @@ class CustomerSignUpRequest extends FormRequest
             'username' => ['required', 'regex:/^\S*$/', 'string','min:3','max:50','unique:customers,username,NULL,id,deleted_at,NULL'],
             'tenant' => 'required|string|lowercase|regex:/^\S*$/|min:3|max:100|unique:tenants,id,NULL,id,deleted_at,NULL',
         ];
+
+        if($this->created_by === 'customer' && !$this->is_free_trail) {
+            $data['payment_method'] = 'required';
+        }
+
+        return $data;
     }
 
     public function messages(): array

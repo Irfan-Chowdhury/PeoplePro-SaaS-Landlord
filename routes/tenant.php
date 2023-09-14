@@ -623,7 +623,7 @@ Route::middleware(['XSS', 'web', 'package.validity',InitializeTenancyByDomain::c
             Route::get('payslip_show', [PayrollController::class, 'paySlip'])->name('paySlip.show');
             Route::post('payslip/pay/{id}', [PayrollController::class, 'payEmployee'])->name('paySlip.pay');
             Route::post('payslip/payment/bulk', [PayrollController::class, 'payBulk'])->name('paySlip.bulk_pay');
-            Route::get('payslip/generate', [PayrollController::class, 'paySlipGenerate'])->name('paySlip.generate');
+            Route::get('payslip/generate', [PayrollController::class, 'payslipGenerateInfoShow'])->name('paySlip.generate');
 
             Route::get('payment_history', [PayslipController::class, 'index'])->name('payment_history.index');
             Route::get('payslip/delete/{payslip}', [PayslipController::class, 'delete'])->name('payslip.destroy');

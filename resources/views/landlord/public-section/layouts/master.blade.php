@@ -324,16 +324,16 @@
 
 
     <!--Plugin js -->
-    <script src="landlord/js/plugin.js"></script>
+    <script src="{{ asset('landlord/js/plugin.js') }}"></script>
     <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jquery.lazy/1.7.9/jquery.lazy.min.js"></script>
     <!-- Sweetalert2 -->
     {{-- <script src="landlord/js/sweetalert2@11.js"></script> --}}
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <!-- Main js -->
-    <script src="landlord/js/main.js"></script>
-    <script type="text/javascript" src="https://js.stripe.com/v3/"></script>
-    <script type="text/javascript" src="{{ asset('js/payment/razorpay.js') }}"></script>
+    <script src="{{ asset('landlord/js/main.js') }}"></script>
+    {{-- <script type="text/javascript" src="https://js.stripe.com/v3/"></script> --}}
+    {{-- <script type="text/javascript" src="{{ asset('js/payment/razorpay.js') }}"></script> --}}
 
     {{-- <script>
         let targetURL = "{{ url('/payment/razorpay/pay/confirm')}}";
