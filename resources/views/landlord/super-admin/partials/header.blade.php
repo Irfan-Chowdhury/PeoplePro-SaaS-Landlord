@@ -22,39 +22,12 @@
                     <li class="nav-item">
                         <a class="dropdown-header-name" style="padding-right: 10px" href="{{ route('landingPage.index') }}" target="_blank" title="View Website"><i class="dripicons-preview"></i></a>
                     </li>
-                    <li class="nav-item"><a id="btnFullscreen" data-toggle="tooltip"
-                                            title="{{__('Full Screen')}}"><i class="dripicons-expand"></i></a></li>
-                    <li class="nav-item">
-                        <a rel="nofollow" id="notify-btn" href="#" class="nav-link dropdown-item" data-toggle="tooltip"
-                           title="{{__('Notifications')}}">
-                            <i class="dripicons-bell"></i>
-                            {{-- @if(auth()->user()->unreadNotifications->count())
-                                <span class="badge badge-danger">
-                                    {{auth()->user()->unreadNotifications->count()}}
-                                </span>
-                            @endif --}}
-                            <span class="badge badge-danger">
-                                5
-                            </span>
-                        </a>
-                        <ul class="right-sidebar">
-                            <li class="header">
-                                <span class="pull-right"><a href="">{{__('Clear All')}}</a></span>
-                                <span class="pull-left"><a href="">{{__('See All')}}</a></span>
-                            </li>
-                            {{-- @foreach(auth()->user()->notifications as $notification)
-                                <li><a class="unread-notification"
-                                       href={{$notification->data['link']}}>{{$notification->data['data']}}</a></li>
-                            @endforeach --}}
-                        </ul>
-                    </li>
+                    <li class="nav-item"><a id="btnFullscreen" data-toggle="tooltip" title="{{__('Full Screen')}}"><i class="dripicons-expand"></i></a></li>
                     <li class="nav-item">
                         <a rel="nofollow" href="#" class="nav-link dropdown-item" data-toggle="tooltip"
                            title="{{__('Language')}}">
                             <i class="dripicons-web">
-                                {{-- {{ __(strtoupper('en')) }} --}}
-                                {{ Session::has('TempSuperAdminLocale') ? strtoupper(Session::get('TempSuperAdminLocale')) : strtoupper(Session::has('DefaultSuperAdminLocale')) }}
-
+                                {{ Session::has('TempSuperAdminLocale') ? strtoupper(Session::get('TempSuperAdminLocale')) : strtoupper(Session::get('DefaultSuperAdminLocale')) }}
                             </i>
                         </a>
                         <ul class="right-sidebar">
@@ -73,15 +46,6 @@
                             @endif
                         </ul>
                     </li>
-
-                {{-- @if (Auth::user()->role_users_id==1) --}}
-                    <li class="nav-item">
-                        <a class="nav-link" href="#" target="_blank" data-toggle="tooltip"
-                           title="{{__('Documentation')}}">
-                            <i class="dripicons-information"></i>
-                        </a>
-                    </li>
-                {{-- @endif --}}
 
                     <li class="nav-item">
                         <a rel="nofollow" href="#" class="nav-link dropdown-item">
@@ -105,22 +69,6 @@
                                     {{trans('file.Profile')}}
                                 </a>
                             </li>
-                            {{-- @if(auth()->user()->role_users_id == 1) --}}
-                                <li id="empty_database">
-                                    <a href="#">
-                                        <i class="dripicons-stack"></i>
-                                        {{__('Empty Database')}}
-                                    </a>
-                                </li>
-                            {{-- @endif --}}
-                            {{-- @if(auth()->user()->role_users_id == 1) --}}
-                                <li id="export_database">
-                                    <a href="#">
-                                        <i class="dripicons-cloud-download"></i>
-                                        {{__('Export Database')}}
-                                    </a>
-                                </li>
-                            {{-- @endif --}}
                             <li>
                                 <form id="logout-form" action="{{ route('landlord.logout') }}" method="POST">
                                     @csrf
@@ -133,5 +81,4 @@
             </div>
         </div>
     </nav>
-    {{-- @include('shared.flash_message') --}}
 </header>

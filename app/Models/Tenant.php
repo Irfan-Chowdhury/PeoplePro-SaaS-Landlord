@@ -41,5 +41,9 @@ class Tenant extends BaseTenant implements TenantWithDatabase
         return $this->hasOne(Domain::class, 'tenant_id');
     }
 
-
+    // DashboardController
+    public function scopeTotalActiveTenantCount($query)
+    {
+        return $query->where('expiry_date', '>=', now()->format('Y-m-d'))->count();
+    }
 }

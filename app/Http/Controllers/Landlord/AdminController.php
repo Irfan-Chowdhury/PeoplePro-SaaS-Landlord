@@ -37,7 +37,6 @@ class AdminController extends Controller
     public function logout(Request $request)
     {
         Session::forget(['TempSuperAdminLangId','DefaultSuperAdminLangId']);
-
         Auth::logout();
 
         return redirect('/super-admin');

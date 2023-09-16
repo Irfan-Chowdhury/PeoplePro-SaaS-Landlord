@@ -63,7 +63,6 @@ Route::controller(TenantController::class)->group(function () {
 Route::controller(PaymentController::class)->group(function () {
     Route::post('/payment/{paymentMethod}/pay', 'paymentPayPage')->name('payment.pay.page');
     Route::post('payment/{paymentMethod}/pay/process', 'paymentProcessWithTenantAndLandlord')->name('payment.pay.process');
-    // Route::post('payment/{paymentMethod}/pay/confirm', 'paymentPayConfirm')->name('payment.pay.confirm');
     Route::post('payment/{paymentMethod}/pay/cancel', 'paymentPayCancel')->name('payment.pay.cancel');
     Route::get('payment-success/{domain}', 'paymentSuccess')->name('payment.success');
 });
@@ -74,7 +73,7 @@ Route::get('/super-admin', [AdminController::class, 'showLoginForm'])->name('lan
 Route::post('/super-admin', [AdminController::class, 'login'])->name('landlord.login.proccess');
 Route::post('/super-admin/logout', [AdminController::class, 'logout'])->name('landlord.logout');
 
-Route::middleware(['web','auth','setLocale'])->group(function () {
+Route::middleware(['web','auth','setSuperAdminLocale'])->group(function () {
     Route::prefix('super-admin')->group(function () {
 
         Route::get('dashboard',[DashboardController::class, 'index'])->name('landlord.dashboard');
@@ -88,6 +87,12 @@ Route::middleware(['web','auth','setLocale'])->group(function () {
                 Route::post('/renew-subscription/{tenant}', 'renewExpiryUpdate')->name('customer.renew_subscription_update')->middleware('demoCheck');
                 Route::post('/change-package/{tenant}', 'changePackageProcess')->name('customer.change_package')->middleware('demoCheck');
                 Route::get('/destroy/{tenant}', 'destroy')->name('customer.destroy')->middleware('demoCheck');
+            });
+        });
+        Route::controller(PaymentController::class)->group(function () {
+            Route::prefix('payments')->group(function () {
+                Route::get('/', 'index')->name('payment.index');
+                Route::get('/datatable', 'datatable')->name('payment.datatable');
             });
         });
 

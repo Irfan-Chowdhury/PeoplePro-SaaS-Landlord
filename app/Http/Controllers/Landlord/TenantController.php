@@ -75,7 +75,7 @@ class TenantController extends Controller
                     return '<a href="https://'.$row->domainInfo->domain.'" target="_blank">'.$row->domainInfo->domain.'</a>';
                 })
                 ->addColumn('customer', function ($row) {
-                    return $row->customer->first_name.' '.$row->customer->last_name;
+                    return $row->customer->getFullNameAttribute();
                 })
                 ->addColumn('email', function ($row) {
                     return $row->customer->email;

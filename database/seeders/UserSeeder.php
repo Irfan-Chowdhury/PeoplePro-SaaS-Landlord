@@ -15,16 +15,6 @@ class UserSeeder extends Seeder
     public function run(): void
     {
         $data = [
-            // [
-            //     'first_name'=>'Mr',
-            //     'last_name'=>'Admin',
-            //     'username'=> 'admin',
-            //     'email'=> 'admin@gmail.com',
-            //     'password'=> bcrypt('admin'),
-            //     'role_users_id'=> 1,
-            //     'is_active'=> true,
-            //     'contact_no'=> 123456789
-            // ],
             [
                 'first_name'=>'Mr',
                 'last_name'=>'Employee',

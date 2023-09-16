@@ -24,4 +24,8 @@ class Customer extends Model
     protected $hidden = [
         'password',
     ];
+
+    public function scopeGetFullNameAttribute() {
+		return ucfirst($this->first_name) . ' ' . ucfirst($this->last_name);
+	}
 }

@@ -33,6 +33,51 @@ class PaymentController extends Controller
         });
     }
 
+    public function index()
+    {
+        // $payments = Payment::with('tenant','domainInfo')->get();
+        // return $payments;
+
+        return view('landlord.super-admin.pages.payments.index');
+    }
+
+
+    public function datatable()
+    {
+        $payments = Payment::with('tenant','domainInfo')->get();
+
+        if (request()->ajax()) {
+            return datatables()->of($payments)
+                ->setRowId(function ($row) {
+                    return $row->id;
+                })
+                ->addColumn('customer', function ($row) {
+                    return $row->tenant->customer->getFullNameAttribute();
+                })
+                ->addColumn('amount', function ($row) {
+                    return $row->amount;
+                })
+                ->addColumn('payment_method ', function ($row) {
+                    return 12; //ucfirst($row->payment_method);
+                })
+                ->addColumn('subscription_type ', function ($row) {
+                    return ucfirst($row->subscription_type);
+                })
+                ->addColumn('domain', function ($row) {
+                    if(isset($row->domainInfo->domain)) {
+                        return '<a href="https://'.$row->domainInfo->domain.'" target="_blank">'.$row->domainInfo->domain.'</a>';
+                    }
+                })
+                ->addColumn('created_at', function ($row) {
+                    return date('Y-m-d', strtotime($row->created_at));
+                })
+                ->rawColumns(['domain'])
+                ->make(true);
+        }
+    }
+
+
+
     public function paymentPayPage($paymentMethod, Request $request)
     {
         $tenantRequestData = json_encode($request->all());

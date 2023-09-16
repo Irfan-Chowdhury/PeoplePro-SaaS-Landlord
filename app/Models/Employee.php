@@ -96,7 +96,6 @@ class Employee extends Model
 	}
 
 
-
 	public function setDateOfBirthAttribute($value)
 	{
 		$this->attributes['date_of_birth'] = Carbon::createFromFormat(env('Date_Format'), $value)->format('Y-m-d');
