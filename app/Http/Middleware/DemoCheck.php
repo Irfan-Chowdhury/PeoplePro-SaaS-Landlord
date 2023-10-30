@@ -8,11 +8,6 @@ use Symfony\Component\HttpFoundation\Response;
 
 class DemoCheck
 {
-    /**
-     * Handle an incoming request.
-     *
-     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
-     */
     public function handle(Request $request, Closure $next): Response
     {
         if (env('USER_VERIFIED')!=1) {

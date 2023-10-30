@@ -29,11 +29,11 @@ class JobInterview extends Model
 
 	public function setInterviewDateAttribute($value)
 	{
-		$this->attributes['interview_date'] = Carbon::createFromFormat(env('Date_Format'), $value)->format('Y-m-d');
+		$this->attributes['interview_date'] = Carbon::createFromFormat(session()->get('dateFormat'), $value)->format('Y-m-d');
 	}
 
 	public function getInterviewDateAttribute($value)
 	{
-		return Carbon::parse($value)->format(env('Date_Format'));
+		return Carbon::parse($value)->format(session()->get('dateFormat'));
 	}
 }

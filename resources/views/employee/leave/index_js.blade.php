@@ -1,10 +1,13 @@
 $('#employee_leave-table').DataTable().clear().destroy();
-var date = $('.date');
+
+let date = $('.date');
+let dateFormatJs = @json(session('dateFormatJs'));
 date.datepicker({
-format: '{{ env('Date_Format_JS')}}',
-autoclose: true,
-todayHighlight: true
+    format: dateFormatJs,
+    autoclose: true,
+    todayHighlight: true
 });
+
 
 
 

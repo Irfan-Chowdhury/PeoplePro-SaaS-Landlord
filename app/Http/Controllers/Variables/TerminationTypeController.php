@@ -23,14 +23,15 @@ class TerminationTypeController {
 				})
 				->addColumn('action', function ($data)
 				{
-					if (auth()->user()->can('user-edit'))
+					if (auth()->user()->can('access-variable_type'))
 					{
 						$button = '<button type="button" name="edit" id="' . $data->id . '" class="termination_edit btn btn-primary btn-sm"><i class="dripicons-pencil"></i></button>';
 						$button .= '&nbsp;&nbsp;';
 						$button .= '<button type="button" name="delete" id="' . $data->id . '" class="termination_delete btn btn-danger btn-sm"><i class="dripicons-trash"></i></button>';
 
 						return $button;
-					} else
+					}
+                    else
 					{
 						return '';
 					}
@@ -45,7 +46,7 @@ class TerminationTypeController {
 	{
 		$logged_user = auth()->user();
 
-		if ($logged_user->can('user-add'))
+		if ($logged_user->can('access-variable_type'))
 		{
 			$validator = Validator::make($request->only('termination_title'),
 				[
@@ -106,7 +107,7 @@ class TerminationTypeController {
 	{
 		$logged_user = auth()->user();
 
-		if ($logged_user->can('user-edit'))
+		if ($logged_user->can('access-variable_type'))
 		{
 			$id = $request->hidden_termination_id;
 
@@ -157,7 +158,7 @@ class TerminationTypeController {
 		}
 		$logged_user = auth()->user();
 
-		if ($logged_user->can('user-delete'))
+		if ($logged_user->can('access-variable_type'))
 		{
 			TerminationType::whereId($id)->delete();
 			return response()->json(['success' => __('Data is successfully deleted')]);

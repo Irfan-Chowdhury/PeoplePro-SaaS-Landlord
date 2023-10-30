@@ -68,15 +68,15 @@
                     'nameData' => 'password',
                     'placeholderData' => '123456789',
                     'isRequired' => false,
-                    'valueData'=> isset($mailSetting->password) ? $mailSetting->password : null
+                    'valueData'=> config('mail.password')
                 ])
 
                 <div class="col-md-6 form-group">
                     <label class="font-weight-bold">{{trans('file.Encryption')}}</label>
                     <select name="encryption" class="selectpicker form-control"
                         data-live-search="true" data-live-search-style="contains">
-                        <option value="tls" {{ $mailSetting->encryption === 'tls' ? 'selected' : null }}>@lang('file.TLS')</option>
-                        <option value="ssl" {{ $mailSetting->encryption === 'ssl' ? 'selected' : null }}>@lang('file.SSL')</option>
+			<option value="tls" {{ isset($mailSetting->encryption) && $mailSetting->encryption === 'tls' ? 'selected' : null }}>@lang('file.TLS')</option>
+                        <option value="ssl" {{ isset($mailSetting->encryption) && $mailSetting->encryption === 'ssl' ? 'selected' : null }}>@lang('file.SSL')</option>
                     </select>
                 </div>
 

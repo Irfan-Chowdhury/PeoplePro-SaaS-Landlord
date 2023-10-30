@@ -22,7 +22,7 @@
                             <div class="col-md-6 offset-md-3 mb-2">
                                 <label for="day_month_year">{{__('Select Date')}}</label>
                                 <div class="input-group">
-                                    <input class="form-control month_year date" placeholder="{{__('Select Date')}}" readonly="" id="day_month_year" name="day_month_year" type="text" value="{{now()->format(env('date_format'))}}">
+                                    <input class="form-control month_year date" placeholder="{{__('Select Date')}}" readonly="" id="day_month_year" name="day_month_year" type="text" value="{{now()->format(session()->get('dateFormat'))}}">
                                     <button type="submit" class="filtering btn btn-primary"><i class="fa fa-search"></i> {{trans('file.Search')}}
                                         </button>
                                 </div>
@@ -65,8 +65,10 @@
         $(document).ready(function () {
 
             let date = $('.date');
+            let dateFormatJs = @json(session('dateFormatJs'));
+
             date.datepicker({
-                format: '{{ env('Date_Format_JS')}}',
+                format: dateFormatJs,
                 autoclose: true,
                 todayHighlight: true,
                 endDate: new Date()

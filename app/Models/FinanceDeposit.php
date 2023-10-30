@@ -30,12 +30,12 @@ class FinanceDeposit extends Model
 
 	public function setDepositDateAttribute($value)
 	{
-		$this->attributes['deposit_date'] = Carbon::createFromFormat(env('Date_Format'), $value)->format('Y-m-d');
+		$this->attributes['deposit_date'] = Carbon::createFromFormat(session()->get('dateFormat'), $value)->format('Y-m-d');
 	}
 
 	public function getDepositDateAttribute($value)
 	{
-		return Carbon::parse($value)->format(env('Date_Format'));
+		return Carbon::parse($value)->format(session()->get('dateFormat'));
 	}
 
 

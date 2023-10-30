@@ -15,6 +15,7 @@ use App\Models\Landlord\GeneralSetting;
 use App\Services\GeneralSettingService;
 use App\Services\SettingService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Crypt;
 
 class SettingController extends Controller
 {
@@ -29,8 +30,12 @@ class SettingController extends Controller
         $generalSetting =  $this->settingService->getLatestGeneralSettingData();
 
         $paymentSetting =  $this->settingService->getLatestPaymentSettingData();
-        $paymentGateWays = explode(",",$paymentSetting->active_payment_gateway);
-
+        
+        $paymentGateWays = [];
+        if(isset($paymentSetting->active_payment_gateway)) {
+            $paymentGateWays = explode(",",$paymentSetting->active_payment_gateway);
+        }
+        
         $mailSetting =  $this->settingService->getLatestMailSettingData();
 
         $analyticSetting =  $this->settingService->getLatestAnalyticSettingData();

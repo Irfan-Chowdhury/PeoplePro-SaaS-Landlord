@@ -52,8 +52,6 @@ class PackageController extends Controller
 
     public function update(UpdatePackageRequest $request, $packageId)
     {
-        // return $this->featureAndPermissionManage($request->features[0]);
-
         $result = $this->packageService->updateInfo($request, $packageId);
 
         return response()->json($result['alertMsg'], $result['statusCode']);

@@ -26,17 +26,17 @@ class JobPost extends Model
 
 	public function setClosingDateAttribute($value)
 	{
-		$this->attributes['closing_date'] = Carbon::createFromFormat(env('Date_Format'), $value)->format('Y-m-d');
+		$this->attributes['closing_date'] = Carbon::createFromFormat(session()->get('dateFormat'), $value)->format('Y-m-d');
 	}
 
 	public function getClosingDateAttribute($value)
 	{
-		return Carbon::parse($value)->format(env('Date_Format'));
+		return Carbon::parse($value)->format(session()->get('dateFormat'));
 	}
 
 	public function getCreatedAtAttribute($value)
 	{
-		return Carbon::parse($value)->format(env('Date_Format'));
+		return Carbon::parse($value)->format(session()->get('dateFormat'));
 	}
 
 }

@@ -25,7 +25,6 @@ use Illuminate\Support\Facades\DB;
 
 class LeaveController extends Controller
 {
-
     public function index()
     {
         $logged_user = auth()->user();
@@ -140,22 +139,15 @@ class LeaveController extends Controller
             $leave = leave::create($data);
 
             if ($leave->is_notify == 1) {
+                // tenantSetMailInfo();
+
                 $text = "A new leave-notification has been published";
                 $notifiable = User::findOrFail($data['employee_id']);
                 $notifiable->notify(new LeaveNotification($text)); //To Employee
-            } elseif ((Auth::user()->role_users_id != 1) && ($leave->is_notify == NULL)) {
-                //get-leave-notification - 294
-                $role_ids = DB::table('role_has_permissions')->where('permission_id', 294)->get()->pluck('role_id');
-                $role_ids[] = 1;
 
-                $notifiable = User::whereIn('role_users_id', $role_ids)->get();
-                foreach ($notifiable as $item) {
-                    $item->notify(new LeaveNotificationToAdmin());
-                }
-
-                //Mail
                 $department = department::with('DepartmentHead:id,email')->where('id', $request->department_id)->first();
-                Notification::route('mail', $department->DepartmentHead->email)
+                if ($department) {
+                    Notification::route('mail', $department->DepartmentHead->email)
                     ->notify(new EmployeeLeaveNotification(
                         $leave->employee->full_name,
                         $leave->total_days,
@@ -163,7 +155,30 @@ class LeaveController extends Controller
                         $leave->end_date,
                         $leave->leave_reason,
                     ));
+                }
             }
+            //294 does not exists
+            // elseif ((Auth::user()->role_users_id != 1) && ($leave->is_notify == NULL)) {
+            //     //get-leave-notification - 294
+            //     $role_ids = DB::table('role_has_permissions')->where('permission_id', 294)->get()->pluck('role_id');
+            //     $role_ids[] = 1;
+
+            //     $notifiable = User::whereIn('role_users_id', $role_ids)->get();
+            //     foreach ($notifiable as $item) {
+            //         $item->notify(new LeaveNotificationToAdmin());
+            //     }
+
+            //     //Mail
+            //     $department = department::with('DepartmentHead:id,email')->where('id', $request->department_id)->first();
+            //     Notification::route('mail', $department->DepartmentHead->email)
+            //         ->notify(new EmployeeLeaveNotification(
+            //             $leave->employee->full_name,
+            //             $leave->total_days,
+            //             $leave->start_date,
+            //             $leave->end_date,
+            //             $leave->leave_reason,
+            //         ));
+            // }
             return response()->json(['success' => __('Data Added successfully.')]);
         }
         return response()->json(['success' => __('You are not authorized')]);
@@ -208,6 +223,7 @@ class LeaveController extends Controller
     public function update(Request $request)
     {
         $logged_user = auth()->user();
+        // tenantSetMailInfo();
 
         if ($logged_user->can('edit-leave')) {
             $id = $request->hidden_id;

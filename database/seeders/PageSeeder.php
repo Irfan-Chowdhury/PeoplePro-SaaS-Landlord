@@ -22,7 +22,7 @@ class PageSeeder extends Seeder
             [
                 'language_id' => 1,
                 'title' => $title1,
-                'slug' => Utility::slugGenerate($title1),
+                'slug' => 'privacy-policy',
                 'description' => $description,
                 'meta_title' => $title1,
                 'meta_description' => $description,
@@ -30,7 +30,8 @@ class PageSeeder extends Seeder
             [
                 'language_id' => 1,
                 'title' => $title2,
-                'slug' => Utility::slugGenerate($title2),
+                //'slug' => Utility::slugGenerate($title2),
+                'slug' => 'terms-and-conditions',
                 'description' => $description,
                 'meta_title' => $title2,
                 'meta_description' => $description,

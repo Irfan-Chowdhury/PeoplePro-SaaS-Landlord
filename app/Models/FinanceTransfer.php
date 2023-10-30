@@ -30,12 +30,12 @@ class FinanceTransfer extends Model
 
 	public function setDateAttribute($value)
 	{
-		$this->attributes['date'] = Carbon::createFromFormat(env('Date_Format'), $value)->format('Y-m-d');
+		$this->attributes['date'] = Carbon::createFromFormat(session()->get('dateFormat'), $value)->format('Y-m-d');
 	}
 
 	public function getDateAttribute($value)
 	{
-		return Carbon::parse($value)->format(env('Date_Format'));
+		return Carbon::parse($value)->format(session()->get('dateFormat'));
 	}
 
 

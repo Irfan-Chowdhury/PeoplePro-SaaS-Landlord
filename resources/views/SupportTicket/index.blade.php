@@ -571,7 +571,7 @@
                         url: '{{route('mass_delete_tickets')}}',
                         method: 'POST',
                         data: {
-                            awardIdArray: id
+                            ticketIdArray: id
                         },
                         success: function (data) {
                             let html = '';

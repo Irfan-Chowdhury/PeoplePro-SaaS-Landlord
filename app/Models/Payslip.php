@@ -35,7 +35,7 @@ class Payslip extends Model
 
 	public function getCreatedAtAttribute($value)
 	{
-		return Carbon::parse($value)->format(env('Date_Format'));
+		return Carbon::parse($value)->format(session()->get('dateFormat'));
 	}
 
 }

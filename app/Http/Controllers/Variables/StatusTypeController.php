@@ -22,7 +22,7 @@ class StatusTypeController {
 				})
 				->addColumn('action', function ($data)
 				{
-					if (auth()->user()->can('user-edit'))
+					if (auth()->user()->can('access-variable_type'))
 					{
 						$button = '<button type="button" name="edit" id="' . $data->id . '" class="status_edit btn btn-primary btn-sm"><i class="dripicons-pencil"></i></button>';
 						$button .= '&nbsp;&nbsp;';
@@ -44,7 +44,7 @@ class StatusTypeController {
 	{
 		$logged_user = auth()->user();
 
-		if ($logged_user->can('user-add'))
+		if ($logged_user->can('access-variable_type'))
 		{
 			$validator = Validator::make($request->only('status_title'),
 				[
@@ -105,7 +105,7 @@ class StatusTypeController {
 	{
 		$logged_user = auth()->user();
 
-		if ($logged_user->can('user-edit'))
+		if ($logged_user->can('access-variable_type'))
 		{
 			$id = $request->hidden_status_id;
 
@@ -156,7 +156,7 @@ class StatusTypeController {
 		}
 		$logged_user = auth()->user();
 
-		if ($logged_user->can('user-delete'))
+		if ($logged_user->can('access-variable_type'))
 		{
 			status::whereId($id)->delete();
 			return response()->json(['success' => __('Data is successfully deleted')]);

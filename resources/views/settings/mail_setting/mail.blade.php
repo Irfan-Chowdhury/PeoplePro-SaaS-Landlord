@@ -1,11 +1,8 @@
 @extends('layout.main') @section('content')
 
-    @if(session()->has('message'))
-        <div class="alert alert-success alert-dismissible text-center"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>{{ session()->get('message') }}</div>
-    @endif
-    @if(session()->has('not_permitted'))
-        <div class="alert alert-danger alert-dismissible text-center"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>{{ session()->get('not_permitted') }}</div>
-    @endif
+
+    @include('includes.session_message')
+
     <section class="forms">
         <div class="container-fluid">
             <div class="row">
@@ -20,38 +17,45 @@
                                 @csrf
 
                                 <div class="row">
-                                <div class="col-md-6">
-                                    <div class="form-group">
+                                    <div class="col-md-6 form-group">
+                                        <label><strong>{{__('Mail Driver')}} *</strong></label>
+                                        <input type="text" name="driver" class="form-control" value="{{ isset($mailSetting->driver) ? $mailSetting->driver : '' }}" required />
+                                    </div>
+                                    <div class="col-md-6 form-group">
                                         <label><strong>{{__('Mail Host')}} *</strong></label>
-                                        <input type="text" name="mail_host" class="form-control" value="{{env('MAIL_HOST')}}" required />
+                                        <input type="text" name="host" class="form-control" value="{{ isset($mailSetting->host) ? $mailSetting->host : '' }}" required />
                                     </div>
-                                    <div class="form-group">
+                                    <div class="col-md-6 form-group">
+                                        <label><strong>{{__('Mail Port')}} *</strong></label>
+                                        <input type="text" name="port" class="form-control" value="{{ isset($mailSetting->port) ? $mailSetting->port : '' }} " required />
+                                    </div>
+                                    <div class="col-md-6 form-group">
                                         <label><strong>{{__('Mail Address')}} *</strong></label>
-                                        <input type="text" name="mail_address" class="form-control" value="{{env('MAIL_FROM_ADDRESS')}}" required />
+                                        <input type="email" name="from_address" class="form-control" value="{{ isset($mailSetting->from_address) ? $mailSetting->from_address : '' }}" required />
                                     </div>
-                                    <div class="form-group">
-                                        <label><strong>{{__('Mail From Name')}} *</strong></label>
-                                        <input type="text" name="mail_name" class="form-control" value="{{env('MAIL_FROM_NAME')}}" required />
+                                    <div class="col-md-6 form-group">
+                                        <label><strong>{{__('Name')}} *</strong></label>
+                                        <input type="text" name="from_name" class="form-control" value="{{ isset($mailSetting->from_name) ? $mailSetting->from_name : '' }}" required />
                                     </div>
-                                    <div class="form-group">
+                                    <div class="col-md-6 form-group">
+                                        <label><strong>{{__('Username')}} *</strong></label>
+                                        <input type="text" name="username" class="form-control" value="{{ isset($mailSetting->username) ? $mailSetting->username : '' }}" required />
+                                    </div>
+                                    <div class="col-md-6 form-group">
+                                        <label><strong>{{trans('file.Password')}} *</strong></label>
+                                        <input type="text" name="password" class="form-control" value="{{ $decryptPassword }}" required />
+                                    </div>
+                                    <div class="col-md-6 form-group">
+                                        <label><strong>{{trans('file.Encryption')}} *</strong></label>
+                                        <select name="encryption" class="form-control">
+                                            <option value="tls" {{ (isset($mailSetting->encryption) && $mailSetting->encryption==='tls') ? 'selected' : '' }}>TLS</option>
+                                            <option value="ssl" {{ (isset($mailSetting->encryption) && $mailSetting->encryption==='ssl') ? 'selected' : '' }}>SSL</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6 form-group">
                                         <input type="submit" value="{{trans('file.submit')}}" class="btn btn-primary">
                                     </div>
                                 </div>
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label><strong>{{__('Mail Port')}} *</strong></label>
-                                        <input type="text" name="port" class="form-control" value="{{env('MAIL_PORT')}}" required />
-                                    </div>
-                                    <div class="form-group">
-                                        <label><strong>{{trans('file.Password')}} *</strong></label>
-                                        <input type="password" name="password" class="form-control" value="" required />
-                                    </div>
-                                    <div class="form-group">
-                                        <label><strong>{{trans('file.Encryption')}} *</strong></label>
-                                        <input type="text" name="encryption" class="form-control" value="{{env('MAIL_ENCRYPTION')}}" required />
-                                    </div>
-                                </div>
-                            </div>
                             </form>
                         </div>
                     </div>

@@ -8,7 +8,7 @@ use App\Models\Landlord\Payment;
 
 class PaypalPayment implements PaybleContract
 {
-    public function pay($tenantRequestData, $paymentRequestData) : object
+    public function pay($tenantRequestData, $paymentRequestData) : object 
     {
         $totalAmount = request()->session()->get('price');
 

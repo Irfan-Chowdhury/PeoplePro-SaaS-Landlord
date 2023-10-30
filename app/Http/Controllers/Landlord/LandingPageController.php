@@ -12,9 +12,11 @@ use App\Contracts\SocialContract;
 use App\Contracts\TenantSignupDescriptionContract;
 use App\Contracts\TestimonialContract;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\ContactUs\ContactUsRequest;
 use App\Http\Requests\Customer\RenewSubscriptionRequest;
 use App\Http\traits\PaymentTrait;
 use App\Http\traits\PermissionHandleTrait;
+use App\Mail\ContactUs;
 use App\Models\Landlord\Hero;
 use App\Models\Landlord\Package;
 use App\Models\Landlord\Page;
@@ -23,7 +25,9 @@ use App\Models\Tenant;
 use App\Services\SocialService;
 use Exception;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Session;
 use Spatie\Permission\Models\Role;
 
@@ -53,6 +57,18 @@ class LandingPageController extends Controller
         $tenant->domains()->create(['domain' => 'bar'.'.'.env('CENTRAL_DOMAIN')]); // This Line
     }
 
+    // public function testSaas()
+    // {
+    //     // return response()->json('test');
+
+    //     try {
+    //         // return response()->json(['message' => 'Login successful'], 200);
+    //         throw new Exception("Error Processing Request", 1);
+    //     } catch (Exception $e) {
+    //         return response()->json(['error' => $e->getMessage()], 500);
+    //     }
+    // }
+
 
     public function index(
         ModuleContract $moduleContract,
@@ -67,17 +83,6 @@ class LandingPageController extends Controller
         $hero = Hero::where('language_id',1)->latest()->first();
         $module  = $moduleContract->fetchLatestDataByLanguageIdWithRelation(['moduleDetails'], $this->languageId);
 
-        // ========= Test ================
-
-        // return $this->languageId;
-        // return Session::get('DefaultSuperAdminLangId');
-        // $languageId = Session::has('TempSuperAdminLangId')==true ? Session::get('TempSuperAdminLangId') : Session::get('DefaultSuperAdminLangId');
-        // return $languageId;
-
-        // return $this->test();
-
-        // ========== Test =============
-
         $faq  = $faqContract->fetchLatestDataByLanguageIdWithRelation(['faqDetails'], $this->languageId);
         $features = $featureContract->all();
         $testimonials = $testimonialContract->getOrderByPosition();
@@ -86,7 +91,7 @@ class LandingPageController extends Controller
         $pages =  $this->pageContract->getAllByLanguageId($this->languageId); //Common
 
         $saasFeatures =  $this->features();
-        $packages = $packageContract->all();
+        $packages = $packageContract->getOrderByPosition();
         $paymentMethods = $this->paymentMethods();
 
         return view('landlord.public-section.pages.landing-page.index',compact([
@@ -116,9 +121,16 @@ class LandingPageController extends Controller
     public function pageDetails($slug)
     {
         $socials = $this->socialContract->getOrderByPosition(); //Common
-        $page =  $this->pageContract->fetchLatestDataBySlug($slug);
-        $pages =  $this->pageContract->getAllByLanguageId($this->languageId); //Common
+        $page    =  $this->pageContract->fetchLatestDataBySlug($slug);
+        $pages   =  $this->pageContract->getAllByLanguageId($this->languageId); //Common
 
         return view('landlord.public-section.pages.pages.page-details',compact('socials', 'page', 'pages'));
+    }
+
+    public function contactUsSubmit(ContactUsRequest $request)
+    {
+        Mail::to(config('mail.from.address'))->send(new ContactUs($request));
+
+        return redirect()->back()->with(['success' => 'Mail Sent Successfully']);
     }
 }

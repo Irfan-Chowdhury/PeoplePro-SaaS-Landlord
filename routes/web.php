@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+use App\Http\Controllers\Landlord\ClientAutoUpdateController;
+use App\Http\Controllers\Landlord\DeveloperSectionController;
 use App\Http\Controllers\Landlord\AdminController;
 use App\Http\Controllers\Landlord\BlogController;
 use App\Http\Controllers\Landlord\LandingPageController;
@@ -23,6 +25,7 @@ use App\Http\Controllers\LanguageSettingController;
 use App\Http\Controllers\Landlord\TenantController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Session;
+use App\Http\Controllers\AddonController;
 
 /*
 |--------------------------------------------------------------------------
@@ -36,48 +39,76 @@ use Illuminate\Support\Facades\Session;
 |
 */
 
-Route::get('/lang', function () {
-    // return Session::has('DefaultSuperAdminLocale') ?? 'en';
+Route::prefix('addons')->group(function () {
+    Route::controller(AddonController::class)->group(function () {
+        Route::get('/', 'index')->name('saas');
+
+        Route::prefix('saas')->group(function () {
+            Route::get('install/step-1', 'saasInstallStep1')->name('saas-install-step-1');
+            Route::get('install/step-2', 'saasInstallStep2')->name('saas-install-step-2');
+            Route::get('install/step-3', 'saasInstallStep3')->name('saas-install-step-3');
+            Route::post('install/process', 'saasInstallProcess')->name('saas-install-process');
+            Route::get('install/step-4', 'saasInstallStep4')->name('saas-install-step-4');
+        });
+    });
 });
+
+
+Route::get('/central-documentation', function() {
+    return view('documentation-landlord.index');
+});
+
+
 Route::get('/get-host', function () {
     return request()->getHost();
 });
 
-Route::middleware(['setPublicLocale'])->group(function () {
+Route::middleware(['setPublicLocale','XSS'])->group(function () {
+
     Route::controller(LandingPageController::class)->group(function () {
         Route::get('/', 'index')->name('landingPage.index');
         Route::get('/blogs', 'blog')->name('landingPage.blog');
         Route::get('/blogs/{slug}', 'blogDetail')->name('landingPage.blogDetail');
         Route::get('/pages/{slug}', 'pageDetails')->name('landingPage.pageDetail');
+        Route::post('/contact-us', 'contactUsSubmit')->name('landingPage.contactUsSubmit');
     });
-});
 
-// tenant.checkout
-Route::controller(TenantController::class)->group(function () {
-    Route::post('/customer-signup', 'customerSignUp')->name('customer.signup')->middleware('demoCheck');
-    Route::get('/contact-for-renewal', 'contactForRenewal')->name('contact_for_renewal');
-    Route::post('/contact-for-renewal', 'renewSubscription')->name('renew_subscription')->middleware('demoCheck');
-});
-//
+    Route::controller(TenantController::class)->group(function () {
+        Route::post('/customer-signup', 'customerSignUp')->name('customer.signup')->middleware('demoCheck');
+        Route::get('/contact-for-renewal', 'contactForRenewal')->name('contact_for_renewal');
+        Route::post('/contact-for-renewal', 'renewSubscription')->name('renew_subscription')->middleware('demoCheck');
+    });
 
-Route::controller(PaymentController::class)->group(function () {
-    Route::post('/payment/{paymentMethod}/pay', 'paymentPayPage')->name('payment.pay.page');
-    Route::post('payment/{paymentMethod}/pay/process', 'paymentProcessWithTenantAndLandlord')->name('payment.pay.process');
-    Route::post('payment/{paymentMethod}/pay/cancel', 'paymentPayCancel')->name('payment.pay.cancel');
-    Route::get('payment-success/{domain}', 'paymentSuccess')->name('payment.success');
-});
+    Route::controller(PaymentController::class)->group(function () {
+        Route::post('/payment/{paymentMethod}/pay', 'paymentPayPage')->name('payment.pay.page');
+        Route::post('payment/{paymentMethod}/pay/process', 'paymentProcessWithTenantAndLandlord')->name('payment.pay.process');
+        Route::post('payment/{paymentMethod}/pay/cancel', 'paymentPayCancel')->name('payment.pay.cancel');
+        Route::get('payment-success/{domain}', 'paymentSuccess')->name('payment.success');
+        Route::get('/payment/paystack/pay/callback', 'handleGatewayCallback')->name('payment.paystack.pay.callback');
+    });
 
+    Route::get('/language-switch-public/{locale}', [TranslationController::class, 'languageSwitchByPublic'])->name('lang.switch.byPublic');
+
+});
 
 
 Route::get('/super-admin', [AdminController::class, 'showLoginForm'])->name('landlord.login')->middleware('guest');
 Route::post('/super-admin', [AdminController::class, 'login'])->name('landlord.login.proccess');
 Route::post('/super-admin/logout', [AdminController::class, 'logout'])->name('landlord.logout');
 
-Route::middleware(['web','auth','setSuperAdminLocale'])->group(function () {
+Route::middleware(['web','auth','setSuperAdminLocale','XSS'])->group(function () {
     Route::prefix('super-admin')->group(function () {
 
-        Route::get('dashboard',[DashboardController::class, 'index'])->name('landlord.dashboard');
+        Route::controller(AdminController::class)->group(function () {
+            Route::prefix('profile')->group(function () {
+                Route::get('/', 'profile')->name('admin.profile');
+                Route::post('/{user}', 'profileUpdate')->name('admin.profile_update');
+                Route::post('/{user}/password', 'passwordUpdate')->name('admin.password_update');
+            });
+        });
 
+
+        Route::get('dashboard',[DashboardController::class, 'index'])->name('landlord.dashboard');
 
         Route::controller(TenantController::class)->group(function () {
             Route::prefix('customers')->group(function () {
@@ -89,6 +120,7 @@ Route::middleware(['web','auth','setSuperAdminLocale'])->group(function () {
                 Route::get('/destroy/{tenant}', 'destroy')->name('customer.destroy')->middleware('demoCheck');
             });
         });
+
         Route::controller(PaymentController::class)->group(function () {
             Route::prefix('payments')->group(function () {
                 Route::get('/', 'index')->name('payment.index');
@@ -224,7 +256,6 @@ Route::middleware(['web','auth','setSuperAdminLocale'])->group(function () {
             });
         });
 
-
         Route::prefix('settings')->group(function () {
             Route::controller(SettingController::class)->group(function () {
                 Route::get('/', 'index')->name('setting.general.index');
@@ -234,6 +265,24 @@ Route::middleware(['web','auth','setSuperAdminLocale'])->group(function () {
                 Route::post('/analytic', 'analyticSettingManage')->name('setting.analytic.manage')->middleware('demoCheck');
                 Route::post('/seo', 'seoSettingManage')->name('setting.seo.manage')->middleware('demoCheck');
             });
+        });
+
+        // Auto Update
+        Route::prefix('developer-section')->group(function () {
+            Route::controller(DeveloperSectionController::class)->group(function () {
+                Route::get('/', 'index')->name('admin.developer-section.index');
+                Route::post('/', 'submit')->name('admin.developer-section.submit');
+                Route::post('/bug-update-setting', 'bugUpdateSetting')->name('admin.bug-update-setting.submit');
+                Route::post('/version-upgrade-setting', 'versionUpgradeSetting')->name('admin.version-upgrade-setting.submit');
+            });
+        });
+
+        Route::controller(ClientAutoUpdateController::class)->group(function () {
+            Route::get('/new-release', 'newVersionReleasePage')->name('new-release');
+            Route::get('/bugs', 'bugUpdatePage')->name('bug-update-page');
+            // Action on Client server
+            Route::post('version-upgrade', 'versionUpgrade')->name('version-upgrade');
+            Route::post('bug-update', 'bugUpdate')->name('bug-update');
         });
     });
 });

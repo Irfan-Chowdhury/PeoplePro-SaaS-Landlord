@@ -1,10 +1,10 @@
 <?php
+// declare(strict_types=1);
 
 namespace App\Payment;
 
 use App\Contracts\PaybleContract;
 use App\Models\Landlord\Payment;
-// use App\Traits\PaymentTrait;
 use Exception;
 use Stripe;
 
@@ -44,10 +44,10 @@ class StripePayment implements PaybleContract
 
     protected function stripe($totalAmount, $stripeToken)
     {
-        Stripe\Stripe::setApiKey(env('STRIPE_SECRET'));
+        Stripe\Stripe::setApiKey(config('payment_gateway.stripe.secret'));
         Stripe\Charge::create ([
                 "amount" => (int)implode(explode(',',$totalAmount)),
-                "currency" => env('STRIPE_CURRENCY'),
+                "currency" => config('payment_gateway.stripe.currency'),
                 "source" => $stripeToken,
                 "description" => "Stripe Payment Successfull."
         ]);

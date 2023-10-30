@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Facades\Utility;
 use App\Models\Announcement;
 use App\Models\Attendance;
 use App\Models\Award;
@@ -45,6 +46,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Throwable;
 // use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\File;
 
 class DashboardController extends Controller {
 
@@ -54,32 +56,9 @@ class DashboardController extends Controller {
 		$this->middleware(['auth']);
 	}
 
-    // protected function testApiSAAS()
-    // {
-    //     // $demoURL = config('auto_update.demo_url');
-    //     $demoURL = "http://peopleprosaas.test/api/";
-    //     $curl = curl_init();
-    //     curl_setopt_array($curl, [
-    //         CURLOPT_RETURNTRANSFER => 1,
-    //         CURLOPT_URL => $demoURL.'saas-api-test',
-    //     ]);
-    //     $response = curl_exec($curl);
-    //     curl_close($curl);
-    //     return json_decode($response, false);
-    // }
-
 
 	public function index()
 	{
-        // DB::table('permissions')->delete();
-        // $data= $this->testApiSAAS()->permissions;
-        // $permissions = json_decode($data, true);
-        // DB::table('permissions')->insert($permissions);
-
-        $autoUpdateData = $this->general();
-        $alertVersionUpgradeEnable = $autoUpdateData['alertVersionUpgradeEnable'];
-        $alertBugEnable =  $autoUpdateData['alertBugEnable'];
-
 		$employees = Employee::with('department:id,department_name', 'designation:id,designation_name')
 			->select('id', 'department_id', 'designation_id', 'is_active')
 			->where('is_active', '=', 1)->where('is_active',1)
@@ -226,8 +205,7 @@ class DashboardController extends Controller {
 			'payslips', 'companies', 'leave_types',
 			'training_types', 'trainers', 'travel_types', 'clients', 'projects',
 			'project_count_array', 'project_name_array', 'completed_projects',
-			'announcements', 'ticket_count', 'per_month', 'per_month_payment', 'months', 'this_month_payment', 'last_six_month_payment',
-            'alertBugEnable','alertVersionUpgradeEnable'
+			'announcements', 'ticket_count', 'per_month', 'per_month_payment', 'months', 'this_month_payment', 'last_six_month_payment'
         ));
 	}
 
@@ -295,13 +273,8 @@ class DashboardController extends Controller {
 
 		if (isset($photo))
 		{
-			$new_user = $request->username;
-			if ($photo->isValid())
-			{
-				$file_name = preg_replace('/\s+/', '', $new_user) . '_' . time() . '.' . $photo->getClientOriginalExtension();
-				$photo->storeAs('profile_photos', $file_name);
-				$user->profile_photo = $file_name;
-			}
+            $imageName = Utility::imageFileStore($photo, tenantPath().'/uploads/profile_photos/', 300, 200);
+            $user->profile_photo = $imageName;
 		}
 
 		$username = strtolower(trim($request->username));
@@ -453,10 +426,10 @@ class DashboardController extends Controller {
 	public function employeeDashboard(Request $request)
 	{
 		$user = auth()->user();
-		$employee = Employee::with('department:id,department_name', 'officeShift')->findOrFail($user->id);
-		$current_day_in = strtolower(Carbon::now()->format('l')) . '_in';
-		$current_day_out = strtolower(Carbon::now()->format('l')) . '_out';
+        $employee = Employee::with('department:id,department_name', 'officeShift')->findOrFail($user->id);
 
+        $current_day_in = strtolower(Carbon::now()->format('l')) . '_in';
+		$current_day_out = strtolower(Carbon::now()->format('l')) . '_out';
 		$shift_in = $employee->officeShift->$current_day_in;
 		$shift_out = $employee->officeShift->$current_day_out;
 		$shift_name = $employee->officeShift->shift_name;
@@ -473,7 +446,6 @@ class DashboardController extends Controller {
 
 		$leave_types = LeaveType::select('id', 'leave_type', 'allocated_day')->get();
 		$travel_types = TravelType::select('id', 'arrangement_type')->get();
-
 
 		$assigned_projects = EmployeeProject::with(['assignedProjects' => function ($query) use ($employee)
 		{
@@ -543,6 +515,7 @@ class DashboardController extends Controller {
                 }
             }
         }
+
 		return view('dashboard.employee_dashboard', compact('user', 'employee', 'employee_attendance',
 			'shift_in', 'shift_out', 'shift_name', 'announcements',
 			'employee_award_count', 'holidays', 'leave_types', 'travel_types',

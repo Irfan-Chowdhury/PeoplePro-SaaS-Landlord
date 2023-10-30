@@ -27,22 +27,22 @@ class Asset extends Model
 
 	public function setPurchaseDateAttribute($value)
 	{
-		$this->attributes['purchase_date'] = Carbon::createFromFormat(env('Date_Format'), $value)->format('Y-m-d');
+		$this->attributes['purchase_date'] = Carbon::createFromFormat(session()->get('dateFormat'), $value)->format('Y-m-d');
 	}
 
 	public function getPurchaseDateAttribute($value)
 	{
 
-		return Carbon::parse($value)->format(env('Date_Format'));
+		return Carbon::parse($value)->format(session()->get('dateFormat'));
 	}
 
 	public function setWarrantyDateAttribute($value)
 	{
-		$this->attributes['warranty_date'] = Carbon::createFromFormat(env('Date_Format'), $value)->format('Y-m-d');
+		$this->attributes['warranty_date'] = Carbon::createFromFormat(session()->get('dateFormat'), $value)->format('Y-m-d');
 	}
 
 	public function getWarrantyDateAttribute($value)
 	{
-		return Carbon::parse($value)->format(env('Date_Format'));
+		return Carbon::parse($value)->format(session()->get('dateFormat'));
 	}
 }

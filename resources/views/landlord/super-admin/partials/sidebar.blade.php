@@ -38,10 +38,19 @@
                 {{-- <li id="localization-translation-menu"><a href="{{ route('lang.translations.index', $language) }}">{{trans('file.Translation')}} </a></li>
                 <li id="localization-add-translation-menu"><a href="{{ route('lang.translations.create', $language) }}">{{trans('file.Add Translation')}} </a></li> --}}
                 <li id="localization-translation-menu"><a href="{{ route('lang.translations.index', config('app.locale')) }}">{{trans('file.Translation')}} </a></li>
-                <li id="localization-add-translation-menu"><a href="{{ route('lang.translations.create', config('app.locale')) }}">{{trans('file.Add Translation')}} </a></li>
+                @if (env('PRODUCT_MODE') !== 'CLIENT')
+                    <li id="localization-add-translation-menu"><a href="{{ route('lang.translations.create', config('app.locale')) }}">{{trans('file.Add Translation')}} </a></li>
+                @endif
             </ul>
         </li>
         <li><a href="{{ route('setting.general.index') }}"><i class="dripicons-gear"></i> {{trans('file.Settings')}}</a></li>
-        <li><a target="_blank" href=""> <i class="dripicons-information"></i><span>{{trans('file.Documentation')}}</span></a></li>
+        <li><a target="_blank" href="https://peopleprohrmsaas.com/central-documentation" target="__blank"> <i class="dripicons-information"></i><span>{{trans('file.Documentation')}}</span></a></li>
+
+        @if (config('auto_update.product_mode') === "DEVELOPER")
+            <li class="{{ (request()->is('developer-section*')) ? 'active' : '' }}"><a
+                href="{{route('admin.developer-section.index')}}">
+                <i class="dripicons-calendar"></i><span> {{__('Auto Update Setting')}}</span></a>
+            </li>
+        @endif
     </ul>
   </nav>

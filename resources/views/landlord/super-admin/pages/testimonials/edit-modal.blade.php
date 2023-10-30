@@ -37,7 +37,7 @@
                             'fieldType' => 'file',
                             'nameData' => 'image',
                             'placeholderData' => null,
-                            'isRequired' => true,
+                            'isRequired' => false,
                         ])
                         @include('landlord.super-admin.partials.input-field',[
                             'colSize' => 12,

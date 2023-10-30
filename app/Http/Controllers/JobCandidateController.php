@@ -2,16 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Facades\Utility;
 use App\Models\JobCandidate;
 
-class JobCandidateController extends Controller {
-
-	//
+class JobCandidateController extends Controller
+{
 
 	public function index()
 	{
-
-		$logged_user = auth()->user();
+        $logged_user = auth()->user();
 		if ($logged_user->can('view-job_candidate'))
 		{
 			if (request()->ajax())
@@ -91,18 +90,11 @@ class JobCandidateController extends Controller {
 		if ($logged_user->can('delete-job_candidate'))
 		{
 			$data = JobCandidate::findOrFail($id);
-			$cv_path = $data->cv;
-
-			if($cv_path)
-			{
-				$cv_path = public_path('uploads/candidate_cv/' . $cv_path);
-				if (file_exists($cv_path))
-				{
-					unlink($cv_path);
-				}
-			}
-
+			$cvName = $data->cv;
+            $filePath = public_path(tenantPath().'/uploads/candidate_cv/');
+            Utility::fileDelete($filePath, $cvName);
 			$data->delete();
+
 			return response()->json(['success' => __('Data is successfully deleted')]);
 		}
 		return response()->json(['success' => __('You are not authorized')]);

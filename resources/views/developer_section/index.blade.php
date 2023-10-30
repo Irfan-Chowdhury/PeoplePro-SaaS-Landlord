@@ -1,6 +1,6 @@
-@extends('layout.main')
-@section('content')
-@section('title','Admin | Developer Section')
+@extends('landlord.super-admin.layouts.master')
+@section('title','Super Admin | Developer Section')
+@section('landlord-content')
 
 
 @include('includes.session_message')

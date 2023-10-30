@@ -25,6 +25,7 @@ return new class extends Migration
             $table->longText('permission_ids');
             // $table->longText('role_permission_values')->nullable(); // remove later
             $table->boolean('is_active');
+            $table->integer('position')->nullable();
             $table->softDeletes();
             $table->timestamps();
         });

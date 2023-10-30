@@ -208,6 +208,9 @@
     (function($) {
         "use strict";
 
+        let tenantPath = @json($publicTenantPath)
+
+
         $(document).ready(function () {
 
             if (window.location.href.indexOf('#formModal') != -1) {
@@ -217,7 +220,7 @@
                 $('#action').val('{{trans("file.Add")}}');
                 $('.hide-add').hide();
                 $('.hide-edit').show();
-                
+
                 $('#formModal').modal('show');
             }
 
@@ -477,7 +480,8 @@
                         $('#is_active').prop('checked', false);
                     }
                     if (html.data.profile) {
-                        $('#store_profile_photo').html("<img src={{ URL::to('/public') }}/uploads/profile_photos/" + html.data.profile + " width='70'  class='img-thumbnail' />");
+                        $('#store_profile_photo').html("<img src={{ URL::to('/') }}/" + tenantPath + "/" + html.data.profile + " width='70'  class='img-thumbnail' />");
+                        // $('#store_profile_photo').html("<img src={{ URL::to('/public') }}/uploads/profile_photos/" + html.data.profile + " width='70'  class='img-thumbnail' />");
                         $('#store_profile_photo').append("<input type='hidden' name='hidden_image' value='" + html.data.profile + "'  />");
                     }
 

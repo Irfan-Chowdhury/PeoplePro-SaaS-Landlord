@@ -20,6 +20,6 @@ class ProjectFile extends Model
 
 	public function getCreatedAtAttribute($value)
 	{
-		return Carbon::parse($value)->format(env('Date_Format').'--H:i');
+		return Carbon::parse($value)->format(session()->get('dateFormat').'--H:i');
 	}
 }

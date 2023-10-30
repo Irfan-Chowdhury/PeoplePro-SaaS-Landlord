@@ -4,8 +4,7 @@
         <!-- Sidebar Navigation Menus-->
         <div class="main-menu">
             <ul id="side-main-menu" class="side-menu list-unstyled">
-                {{-- @if(auth()->user()->role_users_id ==1) --}}
-                @if(auth()->user()->role_users_id == 4)
+                @if(auth()->user()->role_users_id ==1)
                     <li class="{{ (request()->is('admin/dashboard*')) ? 'active' : '' }}"><a
                                 href="{{route('admin.dashboard')}}"> <i
                                     class="dripicons-meter"></i><span>{{trans('file.Dashboard')}}</span></a>
@@ -71,41 +70,23 @@
                                 <i class="dripicons-toggles"></i><span>{{__('Customize Setting')}}</span>
                             </a>
                         @endif
-                        {{-- <a href="#Customize_settings" aria-expanded="false" data-toggle="collapse">
-                            <i class="dripicons-toggles"></i><span>{{__('Customize Setting')}}</span>
-                        </a> --}}
 
                         <ul id="Customize_settings" class="collapse list-unstyled ">
                             @can('view-role')
                                 <li id="roles"><a href="{{route('roles.index')}}">{{__('Roles and Access')}}</a></li>
                             @endcan
                             @can('view-general-setting')
-                                <li id="general_settings"><a
-                                            href="{{route('general_settings.index')}}">{{__('General Settings')}}</a>
-                                </li>
+                                <li id="general_settings"><a href="{{route('general_settings.index')}}">{{__('General Settings')}}</a></li>
                             @endcan
 
                             @can('view-mail-setting')
-                                <li id="mail_setting"><a
-                                            href="{{route('setting.mail')}}">{{__('Mail Setting')}}</a>
-                                </li>
+                                <li id="mail_setting"><a href="{{route('setting.mail')}}">{{__('Mail Setting')}}</a></li>
                             @endcan
-
-                            @can('access-language')
-                                <li id="language_switch"><a
-                                            href="{{route('languages.translations.index','English')}}">{{__('Language Settings')}}</a>
-                                </li>
-                            @endcan
-
                             @can('access-variable_type')
-                                <li id="variable_type"><a
-                                            href="{{route('variables.index')}}">{{__('Variable Type')}}</a>
-                                </li>
+                                <li id="variable_type"><a href="{{route('variables.index')}}">{{__('Variable Type')}}</a></li>
                             @endcan
                             @can('access-variable_method')
-                                <li id="variable_method"><a
-                                            href="{{route('variables_method.index')}}">{{__('Variable Method')}}</a>
-                                </li>
+                                <li id="variable_method"><a href="{{route('variables_method.index')}}">{{__('Variable Method')}}</a></li>
                             @endcan
                             @can('view-general-setting')
                                 <li id="ip_setting"><a href="{{route('ip_setting.index')}}">{{__('IP Settings')}}</a></li>
@@ -170,6 +151,10 @@
                         <i
                                 class="dripicons-view-thumb"></i><span>{{trans('file.Organization')}}</span></a>
                     <ul id="Organization" class="collapse list-unstyled ">
+
+                        @can('view-location')
+                            <li id="location"><a href="{{route('locations.index')}}">{{trans('file.Location')}}</a></li>
+                        @endcan
                         @can('view-company')
                             <li id="company"><a href="{{route('companies.index')}}">{{trans('file.Company')}}</a></li>
                         @endcan
@@ -179,9 +164,6 @@
                             </li>
                         @endcan
 
-                        @can('view-location')
-                            <li id="location"><a href="{{route('locations.index')}}">{{trans('file.Location')}}</a></li>
-                        @endcan
                         @can('view-designation')
                             <li id="designation"><a
                                         href="{{route('designations.index')}}">{{trans('file.Designation')}}</a>
@@ -576,13 +558,6 @@
                             </ul>
                         </li>
                     @endcan
-
-                    @if (config('auto_update.product_mode') === "DEVELOPER")
-                        <li class="{{ (request()->is('developer-section*')) ? 'active' : '' }}"><a
-                            href="{{route('admin.developer-section.index')}}">
-                            <i class="dripicons-calendar"></i><span> {{__('Auto Update Setting')}}</span></a>
-                        </li>
-                    @endif
 
                     @can('file_module')
                         <li class="has-dropdown {{ (request()->is('file_manager*')) ? 'active' : '' }}">

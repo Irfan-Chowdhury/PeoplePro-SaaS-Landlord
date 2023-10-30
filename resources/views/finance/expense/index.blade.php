@@ -282,13 +282,13 @@
 
         $(document).ready(function () {
 
-            var date = $('.date');
+            let date = $('.date');
+            let dateFormatJs = @json(session('dateFormatJs'));
             date.datepicker({
-                format: '{{ env('Date_Format_JS')}}',
+                format: dateFormatJs,
                 autoclose: true,
                 todayHighlight: true
             });
-
 
             var table_table = $('#expense-table').DataTable({
                 initComplete: function () {

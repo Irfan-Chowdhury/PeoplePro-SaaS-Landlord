@@ -17,7 +17,7 @@ class TenantDatabaseSeeder extends Seeder
             CountriesTableSeeder::class,
             GeneralSettingSeeder::class,
             RoleSeeder::class,
-            UserSeeder::class,
+            // UserSeeder::class,
         ]);
     }
 }

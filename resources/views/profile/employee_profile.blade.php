@@ -392,12 +392,13 @@
 
           $(document).ready(function () {
 
-              let date = $('.date');
-              date.datepicker({
-                  format: '{{ env('Date_Format_JS')}}',
-                  autoclose: true,
-                  todayHighlight: true
-              });
+                let date = $('.date');
+                let dateFormatJs = @json(session('dateFormatJs'));
+                date.datepicker({
+                    format: dateFormatJs,
+                    autoclose: true,
+                    todayHighlight: true
+                });
           });
 
           $('[data-table="immigration"]').one('click', function (e) {

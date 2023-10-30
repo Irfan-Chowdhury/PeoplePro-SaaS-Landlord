@@ -8,6 +8,12 @@
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 
+    <style type="text/css">
+        body {
+                margin: 0;
+                font-size: 85%;
+            }
+      </style>
   </head>
   <body>
 
@@ -26,9 +32,7 @@
                                 <th>{{__('Photo')}}</th>
                                 @if ($user['profile_photo']!==null)
 
-                                    <td>
-                                        <img src="{{asset('uploads/profile_photos/' . $user['profile_photo'])}}" height="50" width="60">
-                                    </td>
+                                    <td><img src="{{asset('../../'.tenantPath().'/uploads/profile_photos/' . $user['profile_photo'])}}" height="50" width="60"></td>
 
 
                                         {{-- <td>

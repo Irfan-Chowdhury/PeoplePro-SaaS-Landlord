@@ -4,21 +4,50 @@
 namespace App\Http\traits;
 
 use App\Contracts\PermissionContract;
+use App\Models\Landlord\Package;
 use App\Models\Landlord\Permission;
 
 trait PermissionHandleTrait
 {
-    // public function __construct(public PermissionContract $permissionContract) {}
+    public function featureAndPermissionManage(string $features) //: array
+    {
+        $selectedparentSlugs = explode(',', $features);
 
-    // public function featureAndPermissionManage($features)
+        $skipSlug = $this->skipParentSlug;
+        $matchedSkippedSlugs = [];
+        foreach ($skipSlug as $element) {
+            if (in_array($element, $selectedparentSlugs)) {
+                $matchedSkippedSlugs[] = $element;
+            }
+        }
+
+        $getSlugWithParentData = array_values(array_diff($selectedparentSlugs, $matchedSkippedSlugs)); //check at bottom
+        $getAllTypePermissionsByParentData = Permission::select('id','name','parent','treeview','guard_name')
+                ->whereIn('parent', $getSlugWithParentData)
+                ->orderBy('id','ASC')
+                ->get()->toArray();
+
+        $parentAndSkippedSlug = array_merge($getSlugWithParentData, $matchedSkippedSlugs);
+        $getOnlyParentAndSkippedPermissions = Permission::select('id','name','parent','treeview','guard_name')
+                ->whereIn('name', $parentAndSkippedSlug)
+                ->orderBy('id','ASC')
+                ->get()->toArray();
+
+
+        $getAllPermissions = array_merge($getAllTypePermissionsByParentData, $getOnlyParentAndSkippedPermissions);
+        usort($getAllPermissions, function ($a, $b) {
+            return $a['id'] - $b['id'];
+        });
+
+        return $getAllPermissions;
+    }
+
+
+
+
+    // public function featureAndPermissionManage(string $features) //: array
     // {
-    //     if (is_string($features)) {
-    //         $selectedparentSlugs = explode(',',$features);
-    //     }
-    //     else {
-    //         // For PEST Testing
-    //         $selectedparentSlugs = $features;
-    //     }
+    //     $selectedparentSlugs = explode(',',$features);
 
     //     $skipSlug = $this->skipParentSlug;
     //     $matchedSlugs = [];
@@ -29,12 +58,17 @@ trait PermissionHandleTrait
     //     }
 
     //     $selectedparentSlugs = array_values(array_diff($selectedparentSlugs, $matchedSlugs));
-
-    //     $data1 = $permissionContract->getAllByParent($selectedparentSlugs);
+    //     $data1 = Permission::select('id','name','parent','treeview','guard_name')
+    //             ->whereIn('parent', $selectedparentSlugs)
+    //             ->orderBy('id','ASC')
+    //             ->get()->toArray();
 
     //     $parentSlug = array_merge($selectedparentSlugs, $matchedSlugs);
+    //     $data2 = Permission::select('id','name','parent','treeview','guard_name')
+    //             ->whereIn('name', $parentSlug)
+    //             ->orderBy('id','ASC')
+    //             ->get()->toArray();
 
-    //     $data2 = $permissionContract->getAllByName($parentSlug);
 
     //     $resultOfPermissions = array_merge($data1, $data2);
     //     usort($resultOfPermissions, function ($a, $b) {
@@ -44,39 +78,6 @@ trait PermissionHandleTrait
     //     return $resultOfPermissions;
     // }
 
-    public function featureAndPermissionManage(string $features) //: array
-    {
-        $selectedparentSlugs = explode(',',$features);
-
-        $skipSlug = $this->skipParentSlug;
-        $matchedSlugs = [];
-        foreach ($skipSlug as $element) {
-            if (in_array($element, $selectedparentSlugs)) {
-                $matchedSlugs[] = $element;
-            }
-        }
-
-        $selectedparentSlugs = array_values(array_diff($selectedparentSlugs, $matchedSlugs));
-        $data1 = Permission::select('id','name','parent','treeview','guard_name')
-                ->whereIn('parent', $selectedparentSlugs)
-                ->orderBy('id','ASC')
-                ->get()->toArray();
-
-        $parentSlug = array_merge($selectedparentSlugs, $matchedSlugs);
-        $data2 = Permission::select('id','name','parent','treeview','guard_name')
-                ->whereIn('name', $parentSlug)
-                ->orderBy('id','ASC')
-                ->get()->toArray();
-
-
-        $resultOfPermissions = array_merge($data1, $data2);
-        usort($resultOfPermissions, function ($a, $b) {
-            return $a['id'] - $b['id'];
-        });
-
-        return $resultOfPermissions;
-    }
-
     public $skipParentSlug = [
         'customize-setting',
         'core_hr',
@@ -85,6 +86,7 @@ trait PermissionHandleTrait
         'project-management',
         'file_module',
         'event-meeting',
+        'assets-and-category',
         'finance',
         'training_module',
         'performance',
@@ -1565,7 +1567,6 @@ trait PermissionHandleTrait
                 'parent' => null,
                 'treeview' => 2
             ),
-
             // category
             array(
                 'id' => 198,
@@ -2561,13 +2562,13 @@ trait PermissionHandleTrait
                 'treeview' => 2
             ),
             // assets-and-category
-            // array(
-            //     'id' => 197,
-            //     'guard_name' => 'web',
-            //     'name' => 'assets-and-category',
-            //     'parent' => null,
-            //     'treeview' => 2
-            // ),
+            array(
+                'id' => 197,
+                'guard_name' => 'web',
+                'name' => 'assets-and-category',
+                'parent' => null,
+                'treeview' => 2
+            ),
             // // assets-and-category | category
             array(
                 'id' => 198,
@@ -2724,7 +2725,45 @@ trait PermissionHandleTrait
             if(!in_array($value['name'], $this->skipParentSlug))
             $features[] = $value['name'];
         }
-        
+
         return $features;
     }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Unit Testing
+    |--------------------------------------------------------------------------
+    | Unit/PackageTest.php
+    |
+    */
+
+    public function expectedResultOfPermisson()
+    {
+        $permissions = $this->getAllPermissions();
+
+        usort($permissions, function ($a, $b) {
+            return $a['id'] - $b['id'];
+        });
+
+        return $permissions;
+    }
+
 }
+
+
+    /*
+        $selectedparentSlugs = ['apple', 'banana', 'cherry', 'date'];
+        $matchedSlugs = ['banana', 'date', 'fig'];
+        $result = array_values(array_diff($selectedparentSlugs, $matchedSlugs));
+        print_r($result);
+
+        Output:
+        Array
+        (
+            [0] => apple
+            [1] => cherry
+        )
+        Just take on unique value of $selectedparentSlugs
+    */
+

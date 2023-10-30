@@ -31,7 +31,7 @@
                     <a class="btn btn-default btn-sm" id="my_profile" href="{{route('profile')}}">
                         <i class="dripicons-user"></i> {{trans('file.Profile')}}
                     </a>
-                    @if (env('ENABLE_CLOCKIN_CLOCKOUT')!=NULL)
+                    @if (isset($isEnableClockInClockOut) && $isEnableClockInClockOut)
                     <form class="d-inline m1-2" action="{{route('employee_attendance.post',$employee->id)}}" name="set_clocking"
                           id="set_clocking" autocomplete="off" class="form" method="post" accept-charset="utf-8">
                         @csrf
@@ -523,12 +523,13 @@
                 let totalDaysInput = $('#total_days');
 
                 $(document).ready(function () {
+
                     let date = $('.date');
+                    let dateFormatJs = @json(session('dateFormatJs'));
                     date.datepicker({
-                        format: '{{ env('Date_Format_JS')}}',
+                        format: dateFormatJs,
                         autoclose: true,
-                        todayHighlight: true,
-                        startDate: new Date(),
+                        todayHighlight: true
                     });
 
                     // const startDateInput = $('#start_date');
@@ -575,8 +576,9 @@
                 });
 
                 // let date = $('.date');
+                // let dateFormatJs = @json(session('dateFormatJs'));
                 // date.datepicker({
-                //     format: '{{ env('Date_Format_JS')}}',
+                //     format: dateFormatJs,
                 //     autoclose: true,
                 //     todayHighlight: true
                 // });

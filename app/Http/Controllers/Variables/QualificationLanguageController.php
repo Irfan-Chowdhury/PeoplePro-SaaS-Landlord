@@ -22,7 +22,7 @@ class QualificationLanguageController extends Controller
 				})
 				->addColumn('action', function ($data)
 				{
-					if (auth()->user()->can('user-edit'))
+					if (auth()->user()->can('access-variable_method'))
 					{
 						$button = '<button type="button" name="edit" id="' . $data->id . '" class="language_skill_edit btn btn-primary btn-sm"><i class="dripicons-pencil"></i></button>';
 						$button .= '&nbsp;&nbsp;';
@@ -45,7 +45,7 @@ class QualificationLanguageController extends Controller
 	{
 		$logged_user = auth()->user();
 
-		if ($logged_user->can('user-add'))
+		if ($logged_user->can('access-variable_method'))
 		{
 			$validator = Validator::make($request->only('language_skill_name'),
 				[
@@ -112,7 +112,7 @@ class QualificationLanguageController extends Controller
 	{
 		$logged_user = auth()->user();
 
-		if ($logged_user->can('user-edit'))
+		if ($logged_user->can('access-variable_method'))
 		{
 			$id = $request->get('hidden_language_skill_id');
 
@@ -163,7 +163,7 @@ class QualificationLanguageController extends Controller
 		}
 		$logged_user = auth()->user();
 
-		if ($logged_user->can('user-delete'))
+		if ($logged_user->can('access-variable_method'))
 		{
 			QualificationLanguage::whereId($id)->delete();
 			return response()->json(['success' => __('Data is successfully deleted')]);

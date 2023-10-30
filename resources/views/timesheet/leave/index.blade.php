@@ -310,12 +310,14 @@
         $(document).ready(function () {
 
             let date = $('.date');
+            let dateFormatJs = @json(session('dateFormatJs'));
             date.datepicker({
-                format: '{{ env('Date_Format_JS')}}',
+                format: dateFormatJs,
                 autoclose: true,
                 todayHighlight: true,
-                startDate: new Date(),
+                endDate: new Date()
             });
+
             // .on('change', function(){
             //     let start_date = $("#start_date").datepicker('getDate');
             //     let end_date = $("#end_date").datepicker('getDate');

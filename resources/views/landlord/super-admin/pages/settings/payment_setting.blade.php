@@ -13,108 +13,153 @@
                             title='{{__('Selecting',['key'=>trans('file.No Payment Gateway')])}}...'>
                             <option value="stripe" {{ in_array('stripe', $paymentGateWays) ? 'selected' : null }}>@lang('file.Stripe')</option>
                             <option value="paystack" {{ in_array('paystack', $paymentGateWays) ? 'selected' : null }}>@lang('file.Paystack')</option>
-                            <option value="paypal" {{ in_array('paypal', $paymentGateWays) ? 'selected' : null }}>@lang('file.Paypal')</option>
+                            {{-- <option value="paypal" {{ in_array('paypal', $paymentGateWays) ? 'selected' : null }}>@lang('file.Paypal')</option> --}}
                             <option value="razorpay" {{ in_array('razorpay', $paymentGateWays) ? 'selected' : null }}>@lang('file.Razorpay')</option>
                     </select>
                 </div>
-                <div class="col-md-12">
+
+                <!-- Stripe -->
+                <div class="col-md-12 mt-4">
                     <h5 class="font-weight-bold">@lang('file.Stripe Credentials')</h5>
                     <hr>
                 </div>
                 @include('landlord.super-admin.partials.input-field',[
-                    'colSize' => 6,
+                    'colSize' => 4,
                     'labelName' => 'Stripe Publishable key',
                     'fieldType' => 'text',
                     'nameData' => 'stripe_public_key',
                     'placeholderData' => 'pk_test_ITN7XXXXXXXXXXXXXXXXXXXX',
                     'isRequired' => false,
-                    'valueData'=> isset($paymentSetting->stripe_public_key) ? $paymentSetting->stripe_public_key : null
+                    'valueData'=> config('payment_gateway.stripe.key')
                 ])
                 @include('landlord.super-admin.partials.input-field',[
-                    'colSize' => 6,
+                    'colSize' => 4,
                     'labelName' => 'Stripe Secret key',
                     'fieldType' => 'text',
                     'nameData' => 'stripe_secret_key',
                     'placeholderData' => 'pk_test_ITN7XXXXXXXXXXXXXXXXXXXX',
                     'isRequired' => false,
-                    'valueData'=> isset($paymentSetting->stripe_secret_key) ? $paymentSetting->stripe_secret_key : null
+                    'valueData'=> config('payment_gateway.stripe.secret')
                 ])
 
-                <div class="col-md-12">
-                    <h5 class="font-weight-bold">@lang('file.Paystack Credentials')</h5>
-                    <hr>
-                </div>
                 @include('landlord.super-admin.partials.input-field',[
-                    'colSize' => 6,
-                    'labelName' => 'Paystack Publishable key',
+                    'colSize' => 4,
+                    'labelName' => 'Stripe Currency',
                     'fieldType' => 'text',
-                    'nameData' => 'paystack_public_key',
-                    'placeholderData' => 'pk_test_ITN7XXXXXXXXXXXXXXXXXXXX',
+                    'nameData' => 'stripe_currency',
+                    'placeholderData' => 'inr',
                     'isRequired' => false,
-                    'valueData'=> isset($paymentSetting->paystack_public_key) ? $paymentSetting->paystack_public_key : null
-                ])
-                @include('landlord.super-admin.partials.input-field',[
-                    'colSize' => 6,
-                    'labelName' => 'Paystack Secret key',
-                    'fieldType' => 'text',
-                    'nameData' => 'paystack_secret_key',
-                    'placeholderData' => 'pk_test_ITN7XXXXXXXXXXXXXXXXXXXX',
-                    'isRequired' => false,
-                    'valueData'=> isset($paymentSetting->paystack_secret_key) ? $paymentSetting->paystack_secret_key : null
+                    'valueData'=> config('payment_gateway.stripe.currency')
                 ])
 
-                <div class="col-md-12">
+                <!-- Paypal -->
+                {{-- <div class="col-md-12 mt-4">
                     <h5 class="font-weight-bold">@lang('file.Paypal Credentials')</h5>
                     <hr>
                 </div>
                 @include('landlord.super-admin.partials.input-field',[
-                    'colSize' => 6,
+                    'colSize' => 4,
+                    'labelName' => 'Paypal Mode',
+                    'fieldType' => 'text',
+                    'nameData' => 'paypal_mode',
+                    'placeholderData' => 'sandbox',
+                    'isRequired' => false,
+                    'valueData'=> config('payment_gateway.paypal.mode')
+                ])
+                @include('landlord.super-admin.partials.input-field',[
+                    'colSize' => 4,
                     'labelName' => 'Paypal Client ID',
                     'fieldType' => 'text',
                     'nameData' => 'paypal_client_id',
                     'placeholderData' => 'pk_test_ITN7XXXXXXXXXXXXXXXXXXXX',
                     'isRequired' => false,
-                    'valueData'=> isset($paymentSetting->paypal_client_id) ? $paymentSetting->paypal_client_id : null
+                    'valueData'=> config('payment_gateway.paypal.client_id')
                 ])
                 @include('landlord.super-admin.partials.input-field',[
-                    'colSize' => 6,
+                    'colSize' => 4,
                     'labelName' => 'Paypal Client Secret',
                     'fieldType' => 'text',
                     'nameData' => 'paypal_client_secret',
                     'placeholderData' => 'pk_test_ITN7XXXXXXXXXXXXXXXXXXXX',
                     'isRequired' => false,
-                    'valueData'=> isset($paymentSetting->paypal_client_secret) ? $paymentSetting->paypal_client_secret : null
-                ])
-                <div class="col-md-12">
-                    <h5 class="font-weight-bold">@lang('file.Razorpay Credentials')</h5>
+                    'valueData'=> config('payment_gateway.paypal.client_secret')
+                ]) --}}
+
+
+                <!-- Paystack -->
+                <div class="col-md-12 mt-4">
+                    <h5 class="font-weight-bold">@lang('file.Paystack Credentials')</h5>
                     <hr>
                 </div>
                 @include('landlord.super-admin.partials.input-field',[
                     'colSize' => 4,
-                    'labelName' => 'Razorpay Number',
-                    'fieldType' => 'number',
-                    'nameData' => 'razorpay_number',
-                    'placeholderData' => '123456789',
+                    'labelName' => 'Paystack Publishable key',
+                    'fieldType' => 'text',
+                    'nameData' => 'paystack_public_key',
+                    'placeholderData' => 'pk_test_ITN7XXXXXXXXXXXXXXXXXXXX',
                     'isRequired' => false,
-                    'valueData'=> isset($paymentSetting->razorpay_number) ? $paymentSetting->razorpay_number : null
+                    'valueData'=> config('payment_gateway.paystack.key')
                 ])
                 @include('landlord.super-admin.partials.input-field',[
                     'colSize' => 4,
+                    'labelName' => 'Paystack Secret key',
+                    'fieldType' => 'text',
+                    'nameData' => 'paystack_secret_key',
+                    'placeholderData' => 'pk_test_ITN7XXXXXXXXXXXXXXXXXXXX',
+                    'isRequired' => false,
+                    'valueData'=> config('payment_gateway.paystack.secret')
+                ])
+                @include('landlord.super-admin.partials.input-field',[
+                    'colSize' => 4,
+                    'labelName' => 'Paystack Payment URL',
+                    'fieldType' => 'text',
+                    'nameData' => 'paystack_payment_url',
+                    'placeholderData' => 'https://api.paystack.co',
+                    'isRequired' => false,
+                    'valueData'=> config('payment_gateway.paystack.payment_url')
+                ])
+                @include('landlord.super-admin.partials.input-field',[
+                    'colSize' => 4,
+                    'labelName' => 'Paystack Merchant Email',
+                    'fieldType' => 'text',
+                    'nameData' => 'paystack_merchant_email',
+                    'placeholderData' => 'unicodeveloper@gmail.com',
+                    'isRequired' => false,
+                    'valueData'=> config('payment_gateway.paystack.merchant_email')
+                ])
+                @include('landlord.super-admin.partials.input-field',[
+                    'colSize' => 4,
+                    'labelName' => 'Paystack Currency',
+                    'fieldType' => 'text',
+                    'nameData' => 'paystack_currency',
+                    'placeholderData' => 'NGN',
+                    'isRequired' => false,
+                    'valueData'=> config('payment_gateway.paystack.currency')
+                ])
+
+                <!-- Razorpay -->
+                <div class="col-md-12 mt-4">
+                    <h5 class="font-weight-bold">@lang('file.Razorpay Credentials')</h5>
+                    <hr>
+                </div>
+
+                @include('landlord.super-admin.partials.input-field',[
+                    'colSize' => 6,
                     'labelName' => 'Razorpay Key',
                     'fieldType' => 'text',
                     'nameData' => 'razorpay_key',
                     'placeholderData' => 'pk_test_ITN7XXXXXXXXXXXXXXXXXXXX',
                     'isRequired' => false,
-                    'valueData'=> isset($paymentSetting->razorpay_key) ? $paymentSetting->razorpay_key : null
+                    'valueData'=> config('payment_gateway.razorpay.key')
                 ])
                 @include('landlord.super-admin.partials.input-field',[
-                    'colSize' => 4,
+                    'colSize' => 6,
                     'labelName' => 'Razorpay Secret',
                     'fieldType' => 'text',
                     'nameData' => 'razorpay_secret',
                     'placeholderData' => 'pk_test_ITN7XXXXXXXXXXXXXXXXXXXX',
                     'isRequired' => false,
-                    'valueData'=> isset($paymentSetting->razorpay_secret) ? $paymentSetting->razorpay_secret : null
+                    'valueData'=> config('payment_gateway.razorpay.secret')
                 ])
 
             </div>

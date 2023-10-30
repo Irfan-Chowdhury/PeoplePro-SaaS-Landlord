@@ -98,7 +98,7 @@
     @stack('css')
 
 
-    @if (env('RTL_LAYOUT')!=NULL)
+    @if (isset($isEnableRtlLayout) && $isEnableRtlLayout)
         <link rel="preload" as="style" onload="this.onload=null;this.rel='stylesheet'"  href="{{ asset('../../vendor/bootstrap/css/bootstrap-rtl.min.css') }}">
         <noscript><link rel="preload" as="style" onload="this.onload=null;this.rel='stylesheet'"  href="{{ asset('../../vendor/bootstrap/css/bootstrap-rtl.min.css') }}"></noscript>
 

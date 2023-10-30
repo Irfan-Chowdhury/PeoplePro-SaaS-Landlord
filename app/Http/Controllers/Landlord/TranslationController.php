@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Landlord\Language;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Session;
@@ -80,24 +81,6 @@ class TranslationController extends Controller
         return ['success' => true];
     }
 
-    // public function create()
-    // {
-    //     return view('translation::languages.create');
-    // }
-
-    // public function store(LanguageRequest $request)
-    // {
-    //     if (!env('USER_VERIFIED')) {
-    //         return redirect()->back()->with(['error' => 'This feature is disabled for demo!']);
-    //     }
-
-    //     $this->translation->addLanguage($request->locale, $request->name);
-
-    //     return redirect()
-    //         ->route('languages.index')
-    //         ->with('success', __('translation::translation.language_added'));
-    // }
-
     public function languageSwitch($locale)
     {
         setcookie('language', $locale, time() + (86400 * 365), '/');
@@ -106,6 +89,20 @@ class TranslationController extends Controller
         Session::put('TempSuperAdminLangId', $language->id);
         Session::put('DefaultSuperAdminLocale', $language->locale);
         Session::put('TempSuperAdminLocale', $language->locale);
+
+        return back();
+    }
+
+    public function languageSwitchByPublic($locale)
+    {
+        // setcookie('language', $locale, time() + (86400 * 365), '/');
+
+        $language = Language::where('locale', $locale)->first();
+        Session::put('TempPublicLangId', $language->id);
+        Session::put('TempPublicLocale', $language->locale);
+        App::setLocale($language->locale);
+
+        // Session::put('DefaultSuperAdminLocale', $language->locale);
 
         return back();
     }

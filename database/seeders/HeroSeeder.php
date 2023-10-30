@@ -18,7 +18,7 @@ class HeroSeeder extends Seeder
             'heading' => 'Peoplepro is a HRM software.',
             'sub_heading' => 'Take care of all your products, sales, purchases, stores related tasks from an easy-to-use platform, from anywhere you want, anytime you want',
             'button_text' => 'Try for free',
-            'image' => 'logo.png',
+            'image' => '202310010734541.png',
         ];
 
         Hero::create($data);

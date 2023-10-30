@@ -209,24 +209,4 @@ class CustomerController extends Controller
         }
         return response()->json($result['alertMsg'], $result['statusCode']);
     }
-
-
-    public function test()
-    {
-        // Update --
-        // $tenant = Tenant::find('saastest24');
-        // $tenant->run(function ($tenant) {
-        //     $user = User::find(3);
-        //     $user->first_name = 'irfan';
-        //     $user->update();
-        // });
-
-
-
-        // Delete --
-        // $tenant = Tenant::find('saastest1');
-        // $tenant->domainInfo->delete();
-        // $tenant->delete();
-        // return 'ok';
-    }
 }

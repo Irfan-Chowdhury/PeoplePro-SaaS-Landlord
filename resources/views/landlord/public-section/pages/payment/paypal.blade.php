@@ -1,5 +1,7 @@
 @extends('landlord.public-section.layouts.master')
+@section('public-title', config('app.name').' | '.'Paypal')
 @section('public-content')
+
 <div class="row">
     <div class="col-12">
         <h1 class="page-title h2 text-center uppercase mt-1 mb-5">@lang('file.Paypal')
@@ -19,8 +21,8 @@
 
                 <form action="{{ route('payment.pay.process','paypal') }}" method="post" id="paypalPaymentForm">
                     <input type="hidden" name="tenantRequestData" value="{{ $tenantRequestData }}">
-                    {{-- <input type="hidden" name="total_amount" value="{{ $totalAmount }}"> --}}
-                    <input type="hidden" name="total_amount" value="1">
+                    <input type="hidden" name="total_amount" value="{{ $totalAmount }}">
+                    {{-- <input type="hidden" name="total_amount" value="1"> --}}
 
                     <div id="paypal-button-container"></div>
 
@@ -49,3 +51,4 @@
 <script type="text/javascript" src="{{ asset('js/landlord/common-js/alertMessages.js') }}"></script>
 
 @endpush
+

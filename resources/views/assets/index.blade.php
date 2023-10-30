@@ -327,15 +327,18 @@
     (function($) {
 
         "use strict";
+        let tenantPath = @json($publicTenantPath)
 
         $(document).ready(function () {
 
-            let date = $('.date');
+            var date = $('.date');
+            var dateFormatJs = @json(session('dateFormatJs'));
             date.datepicker({
-                format: '{{ env('Date_Format_JS')}}',
+                format: dateFormatJs,
                 autoclose: true,
                 todayHighlight: true
             });
+
 
 
             let table_table = $('#asset-table').DataTable({
@@ -668,8 +671,7 @@
                     if (result.data.asset_image) {
                         let d_link = '{{ route('assets.download')}}/' + id;
                         $('#asset_image_show_link').html('<a href="' + d_link + '"><strong>{{ __('Download') }}</strong></a><br>');
-                        $('#asset_image_show').html("<img src={{ URL::to('/public') }}/uploads/asset_file/" + result.data.asset_image + " width='70'  class='img-thumbnail' />");
-
+                        $('#asset_image_show').html("<img src={{ URL::to('/') }}/" + tenantPath + result.data.asset_image + " width='70'  class='img-thumbnail' />");
                     }
 
                     $('#asset_modal').modal('show');
@@ -722,8 +724,7 @@
                     if (html.data.asset_image) {
                         let d_link = '{{ route('assets.download')}}/' + id;
                         $('#asset_logo_link').html('<a href="' + d_link + '"><strong>{{ __('Download') }}</strong></a><br>');
-                        $('#asset_logo').html("<img src={{ URL::to('/public') }}/uploads/asset_file/" + html.data.asset_image + " width='70'  class='img-thumbnail' />");
-
+                        $('#asset_logo').html("<img src={{ URL::to('/') }}/" + tenantPath + html.data.asset_image + " width='70'  class='img-thumbnail' />");
                     }
 
 

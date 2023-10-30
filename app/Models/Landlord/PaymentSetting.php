@@ -11,9 +11,10 @@ class PaymentSetting extends Model
 
     protected $fillable  = [
         'active_payment_gateway',
-        
+
         'stripe_public_key',
         'stripe_secret_key',
+        'stripe_currency',
 
         'paystack_public_key',
         'paystack_secret_key',

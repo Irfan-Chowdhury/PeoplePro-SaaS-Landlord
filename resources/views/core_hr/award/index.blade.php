@@ -269,14 +269,18 @@
     (function($) {
         "use strict";
 
+        let tenantPath = @json($publicTenantPath)
+
         $(document).ready(function () {
 
-            let date = $('.date');
+            var date = $('.date');
+            var dateFormatJs = @json(session('dateFormatJs'));
             date.datepicker({
-                format: '{{ env('Date_Format_JS')}}',
+                format: dateFormatJs,
                 autoclose: true,
                 todayHighlight: true
             });
+
 
 
             let table_table = $('#award-table').DataTable({
@@ -518,7 +522,8 @@
                     $('#award_gift_id').html(result.data.gift);
                     $('#award_cash_id').html(result.data.cash);
 
-                    $('#award_photo_id').html("<img src={{ URL::to('/public') }}/uploads/award_photos/" + result.data.award_photo + " width='70'  class='img-thumbnail' />");
+
+                    $('#award_photo_id').html("<img src={{ URL::to('/') }}/" + tenantPath + "/" + result.data.award_photo + " width='70'  class='img-thumbnail' />");
                     $('#award_photo_id').append("<input type='hidden'  name='hidden_image' value='" + result.data.award_photo + "'  />");
 
                     $('#award_modal').modal('show');
@@ -568,7 +573,7 @@
 
                     $('#award_type_id').selectpicker('val', html.data.award_type_id);
 
-                    $('#store_award_photo').html("<img src={{ URL::to('/public') }}/uploads/award_photos/" + html.data.award_photo + " width='70'  class='img-thumbnail' />");
+                    $('#store_award_photo').html("<img src={{ URL::to('/') }}/" + tenantPath + "/" + html.data.award_photo + " width='70'  class='img-thumbnail' />");
                     $('#store_award_photo').append("<input type='hidden' name='hidden_image' value='" + html.data.award_photo + "'  />");
 
                     $('#hidden_id').val(html.data.id);

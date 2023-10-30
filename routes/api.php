@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\DemoAutoUpdateController;
+use App\Http\Controllers\Landlord\DemoAutoUpdateController;
 use App\Http\Controllers\Landlord\API\TestController;
 
 /*

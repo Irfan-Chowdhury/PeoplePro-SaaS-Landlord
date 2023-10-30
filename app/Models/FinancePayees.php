@@ -13,6 +13,6 @@ class FinancePayees extends Model
 
 	public function getUpdatedAtAttribute($value)
 	{
-		return Carbon::parse($value)->format(env('Date_Format'));
+		return Carbon::parse($value)->format(session()->get('dateFormat'));
 	}
 }

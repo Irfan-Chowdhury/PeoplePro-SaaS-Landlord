@@ -79,8 +79,8 @@
 
                                     <div class="col-md-6">
                                         <div class="form-group">
-                                            <label><strong>{{__('Default Bank')}} *</strong></label>
-                                            <select name="account_id" id="account_id"  class="form-control selectpicker" required
+                                            <label><strong>{{__('Default Bank')}} </strong></label>
+                                            <select name="account_id" id="account_id"  class="form-control selectpicker"
                                                     data-live-search="true" data-live-search-style="contains"
                                                     title='{{__('Selecting',['key'=>trans('file.Account')])}}...'>
                                                 @foreach($accounts as $account)
@@ -124,29 +124,29 @@
                                     </div>
                                     <div class="col-md-6">
                                         <div class="mt-4 form-check">
-                                            <input type="checkbox" name="rtl_layout" class="form-check-input" value="1" {{env('RTL_LAYOUT')!=NULL ? 'checked':''}} />
+                                            <input type="checkbox" name="rtl_layout" class="form-check-input" value="1" {{isset($general_settings_data->rtl_layout) && $general_settings_data->rtl_layout ? 'checked':''}} />
                                             <label class="mr-4 form-check-label"><strong>{{trans('file.RTL Layout')}} </strong></label>
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="mt-4 form-check">
-                                            <input type="checkbox" name="enable_clockin_clockout" class="form-check-input" value="1" {{env('ENABLE_CLOCKIN_CLOCKOUT')!=NULL ? 'checked':''}}/>
+                                            <input type="checkbox" name="enable_clockin_clockout" class="form-check-input" value="1" {{$general_settings_data->enable_clockin_clockout ? 'checked':''}}/>
                                             <label class="mr-4 form-check-label"><strong>{{trans('file.Enable Clock In and Clock Out')}} </strong></label>
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="mt-4 form-check">
-                                            <input type="checkbox" name="enable_early_clockin" class="form-check-input" value="1" {{env('ENABLE_EARLY_CLOCKIN')!=NULL ? 'checked':''}}/>
+                                            <input type="checkbox" name="enable_early_clockin" class="form-check-input" value="1" {{$general_settings_data->enable_early_clockin!== NULL ? 'checked':''}}/>
                                             <label class="mr-4 form-check-label"><strong>{{trans('file.Enable Early Clock In (Added to Worktime)')}} </strong></label>
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="form-group mt-4">
                                             <label><strong>{{__('file.Attendance Device Date Format')}}</strong></label>
-                                            <select name="Attendance_Device_date_format" class="selectpicker form-control">
-                                                <option {{env('ATTENDANCE_DEVICE_DATE_FORMAT') =='d/m/Y' ? 'selected':''}} value="d/m/Y">dd/mm/yyyy(23/05/2022)</option>
-                                                <option {{env('ATTENDANCE_DEVICE_DATE_FORMAT') =='m/d/Y' ? 'selected':''}} value="m/d/Y">mm/dd/yyyy(05/23/2022)</option>
-                                                <option {{env('ATTENDANCE_DEVICE_DATE_FORMAT') =='Y/m/d' ? 'selected':''}} value="Y/m/d">yyyy/mm/dd(2022/05/23)</option>
+                                            <select name="attendance_device_date_format" class="selectpicker form-control">
+                                                <option {{$general_settings_data->attendance_device_date_format ==='d/m/Y' ? 'selected':''}} value="d/m/Y">dd/mm/yyyy(23/05/2022)</option>
+                                                <option {{$general_settings_data->attendance_device_date_format ==='m/d/Y' ? 'selected':''}} value="m/d/Y">mm/dd/yyyy(05/23/2022)</option>
+                                                <option {{$general_settings_data->attendance_device_date_format ==='Y/m/d' ? 'selected':''}} value="Y/m/d">yyyy/mm/dd(2022/05/23)</option>
                                             </select>
                                         </div>
                                     </div>

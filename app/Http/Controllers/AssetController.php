@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Facades\Utility;
 use App\Models\Asset;
 use App\Models\AssetCategory;
 use App\Models\company;
@@ -23,6 +24,7 @@ class AssetController extends Controller {
 
 		$companies = company::select('id', 'company_name')->get();
 		$asset_categories = AssetCategory::select('id', 'category_name')->get();
+        $publicTenantPath = tenantPath().'/uploads/asset_file/';
 
 		if (request()->ajax())
 		{
@@ -67,7 +69,7 @@ class AssetController extends Controller {
 				->make(true);
 		}
 
-		return view('assets.index', compact('companies', 'asset_categories'));
+		return view('assets.index', compact('companies', 'asset_categories','publicTenantPath'));
 	}
 
 
@@ -115,21 +117,8 @@ class AssetController extends Controller {
 		$data ['purchase_date'] = $request->purchase_date;
 		$data ['warranty_date'] = $request->warranty_date;
 
-		$file = $request->asset_image;
-		$file_name = null;
-
-
-		if (isset($file))
-		{
-			$file_name = $request->asset_name;
-			if ($file->isValid())
-			{
-				$file_name = preg_replace('/\s+/', '', $file_name) . '_' . time() . '.' . $file->getClientOriginalExtension();
-				$file->storeAs('asset_file', $file_name);
-				$data['asset_image'] = $file_name;
-			}
-		}
-
+        $directory = tenantPath().'/uploads/asset_file/';
+        $data['asset_image'] = Utility::imageFileStore($request->asset_image, $directory, 300, 300);
 
 		Asset::create($data);
 
@@ -221,9 +210,9 @@ class AssetController extends Controller {
 			return response()->json(['errors' => $validator->errors()->all()]);
 		}
 
+        $asset = Asset::whereId($id);
 
 		$data = [];
-
 		$data ['Asset_note'] = $request->asset_note;
 		$data['asset_code'] = $request->asset_code;
 		$data['asset_name'] = $request->asset_name;
@@ -232,59 +221,45 @@ class AssetController extends Controller {
 		$data ['serial_number'] = $request->serial_number;
 		$data ['purchase_date'] = $request->purchase_date;
 		$data ['warranty_date'] = $request->warranty_date;
-
 		$data['employee_id'] = $request->employee_id;
-
 		$data ['company_id'] = $request->company_id;
-
 		$data['status'] = $request->status;
-
 		$data['assets_category_id'] = $request->assets_category_id;
 
-		$file = $request->asset_image;
-		$file_name = null;
+		// $file = $request->asset_image;
+		// $file_name = null;
+		// if (isset($file))
+		// {
+		// 	$file_name = $request->asset_name;
+		// 	if ($file->isValid())
+		// 	{
+		// 		$file_name = preg_replace('/\s+/', '', $file_name) . '_' . time() . '.' . $file->getClientOriginalExtension();
+		// 		$file->storeAs('asset_file', $file_name);
+		// 		$data['asset_image'] = $file_name;
+		// 	}
+		// }
 
-
-		if (isset($file))
-		{
-			$file_name = $request->asset_name;
-			if ($file->isValid())
-			{
-				$file_name = preg_replace('/\s+/', '', $file_name) . '_' . time() . '.' . $file->getClientOriginalExtension();
-				$file->storeAs('asset_file', $file_name);
-				$data['asset_image'] = $file_name;
-			}
-		}
-
-		Asset::find($id)->update($data);
+        if (isset($request->asset_image)) {
+            $assetExistingData = $asset->first();
+            $directory = tenantPath().'/uploads/asset_file/';
+            $assetPrevLogo = $assetExistingData->asset_image;
+            Utility::fileDelete($directory, $assetPrevLogo);
+            $data['asset_image'] = Utility::imageFileStore($request->asset_image, $directory, 300, 300);
+        }
+		$asset->update($data);
 
 		return response()->json(['success' => __('Data is successfully updated')]);
 	}
 
-	/**
-	 * Remove the specified resource from storage.
-	 *
-	 * @param int $id
-	 * @return Response
-	 */
 	public function destroy($id)
 	{
-		if(!env('USER_VERIFIED'))
-		{
+		if(!env('USER_VERIFIED')) {
 			return response()->json(['error' => 'This feature is disabled for demo!']);
 		}
 		$asset = Asset::findOrFail($id);
-		$file_path = $asset->asset_image;
 
-		if ($file_path)
-		{
-			$file_path = public_path('uploads/asset_file/' . $file_path);
-			if (file_exists($file_path))
-			{
-				unlink($file_path);
-			}
-		}
-
+        $directory = tenantPath().'/uploads/asset_file/';
+        Utility::fileDelete($directory, $asset->asset_image);
 		$asset->delete();
 
 		return response()->json(['success' => __('Data is successfully deleted')]);
@@ -303,16 +278,8 @@ class AssetController extends Controller {
 
 		foreach ($assets as $asset)
 		{
-			$file_path = $asset->asset_image;
-
-			if ($file_path)
-			{
-				$file_path = public_path('uploads/asset_file/' . $file_path);
-				if (file_exists($file_path))
-				{
-					unlink($file_path);
-				}
-			}
+            $directory = tenantPath().'/uploads/asset_file/';
+            Utility::fileDelete($directory, $asset->asset_image);
 			$asset->delete();
 		}
 
@@ -324,7 +291,7 @@ class AssetController extends Controller {
 	{
 		$asset = Asset::findOrFail($id);
 		$file_path = $asset->asset_image;
-		$file_path = public_path('uploads/asset_file/' . $file_path);
+		$file_path = public_path(tenantPath().'/uploads/asset_file/' . $file_path);
 
 		return response()->download($file_path);
 	}

@@ -3,8 +3,7 @@
 
     $(document).on("click", ".delete", function (e) {
         e.preventDefault();
-        let languageId = $(this).data("id");
-
+        let modelId = $(this).data("id");
         Swal.fire({
             title: 'Are you sure?',
             text: "You won't be able to revert this!",
@@ -17,7 +16,7 @@
             if (result.isConfirmed) {
 
                 $.get({
-                    url: destroyURL + languageId,
+                    url: destroyURL + modelId,
                     error: function (response) {
                         console.log(response);
                         let htmlContent = prepareMessage(response);

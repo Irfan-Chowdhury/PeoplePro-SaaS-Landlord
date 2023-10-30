@@ -25,7 +25,7 @@ class CreateLeavesTable extends Migration
             $table->mediumText('leave_reason')->nullable();
             $table->string('remarks', 191)->nullable();
             $table->string('status', 40);
-            $table->boolean('is_notify')->default(0);
+            $table->boolean('is_notify')->nullable();
             $table->timestamps();
 
             $table->foreign('company_id', 'leaves_company_id_foreign')->references('id')->on('companies')->onDelete('cascade');

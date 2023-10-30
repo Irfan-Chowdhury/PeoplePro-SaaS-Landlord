@@ -36,7 +36,8 @@ class UsersImport implements ToModel,WithHeadingRow, ShouldQueue,WithChunkReadin
         $designation_name =  $row['designation_name'];
         $shift_name       =  $row['shift_name'];
         $role_name        =  $row['role_name'];
-        $country_name        =  $row['country'];
+        // $country_name     =  $row['country'];
+        $country_name     =  $row['country_name'];
 
         $company = company::where('company_name',$comapny_name)->select('id')->first();
         $department = department::where('department_name',$department_name)->where('company_id',$company->id)->select('id')->first();
@@ -89,8 +90,8 @@ class UsersImport implements ToModel,WithHeadingRow, ShouldQueue,WithChunkReadin
             'staff_id' => 'required|numeric|unique:employees',
             'email'    => 'nullable|email|unique:users',
             'contact_no' => 'required|unique:users',
-            'joining_date' => 'required|dateformat:'.env('Date_Format'),
-            'date_of_birth' => 'required|dateformat:'.env('Date_Format'),
+            'joining_date' => 'required|dateformat:'.session()->get('dateFormat'),
+            'date_of_birth' => 'required|dateformat:'.session()->get('dateFormat'),
             'gender' => 'nullable|in:Male,Female,Other',
             'company_name'=> 'required|exists:companies,company_name',
             'department_name'=> 'required|exists:departments,department_name',

@@ -73,7 +73,7 @@ class ReportController extends Controller {
 					})
 					->addColumn('created_at', function ($row)
 					{
-						return Carbon::parse($row->created_at)->format(env('Date_Format'));
+						return Carbon::parse($row->created_at)->format(session()->get('dateFormat'));
 					})
 					->make(true);
 			}
@@ -140,7 +140,7 @@ class ReportController extends Controller {
 					$date_range = [];
 					foreach ($period as $dt)
 					{
-						$date_range[] = $dt->format(env('Date_Format'));
+						$date_range[] = $dt->format(session()->get('dateFormat'));
 					}
 				} else
 				{
@@ -168,7 +168,7 @@ class ReportController extends Controller {
 					})
 					->addColumn('attendance_date', function ($row)
 					{
-						return Carbon::parse($row)->format(env('Date_Format'));
+						return Carbon::parse($row)->format(session()->get('dateFormat'));
 					})
 					->addColumn('attendance_status', function ($row) use ($all_attendances_array, $leaves, $holidays, $shift)
 					{

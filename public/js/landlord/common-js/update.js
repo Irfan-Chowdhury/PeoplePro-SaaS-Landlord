@@ -33,34 +33,3 @@
         });
     });
 })(jQuery);
-
-
-
-
-
-//'<div class="alert alert-danger">';
-// let htmlContent = '';
-// if(response.responseJSON.errorMsg) {
-//     htmlContent += '<p class="text-danger">' + response.responseJSON.errorMsg + '</p>';
-// }else {
-//     let dataValues = Object.values(response.responseJSON.errors);
-//     for (let count = 0; count < dataValues.length; count++) {
-//         htmlContent += '<p class="text-danger">' + dataValues[count] + '</p>';
-//     }
-// }
-// htmlContent += '</div>';
-
-
-// $('#displayErrorMessageEdit').fadeIn("slow");
-// $('#displayErrorMessageEdit').html(htmlContent);
-// setTimeout(function() {
-//     $('#displayErrorMessageEdit').fadeOut("slow");
-// }, 3000);
-
-
-
-// $('#generalResult').fadeIn("slow");
-// $('#generalResult').addClass('alert alert-success').html(response.success);
-// setTimeout(function() {
-//     $('#generalResult').fadeOut("slow");
-// }, 3000);

@@ -18,7 +18,7 @@ class CreateProjectDiscussionsTable extends Migration
             $table->unsignedBigInteger('project_id');
             $table->unsignedBigInteger('user_id')->nullable();
             $table->mediumText('project_discussion');
-            $table->string('discussion_attachment', 191);
+            $table->string('discussion_attachment', 191)->nullable();
             $table->timestamps();
 
             $table->foreign('project_id', 'project_discussions_project_id_foreign')->references('id')->on('projects')->onDelete('cascade');

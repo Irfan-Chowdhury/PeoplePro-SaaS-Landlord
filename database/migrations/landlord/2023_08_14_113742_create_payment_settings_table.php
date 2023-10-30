@@ -16,10 +16,15 @@ return new class extends Migration
             $table->string('active_payment_gateway');
             $table->string('stripe_public_key')->nullable();
             $table->string('stripe_secret_key')->nullable();
+            $table->string('stripe_currency',191)->nullable();
+            
             $table->string('paystack_public_key')->nullable();
             $table->string('paystack_secret_key')->nullable();
+
+            $table->string('paypal_mode',191)->nullable();
             $table->string('paypal_client_id')->nullable();
             $table->string('paypal_client_secret')->nullable();
+
             $table->string('razorpay_number')->nullable();
             $table->string('razorpay_key')->nullable();
             $table->string('razorpay_secret')->nullable();

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Facades\Utility;
 use App\Models\Award;
 use App\Models\AwardType;
 use App\Models\company;
@@ -26,7 +27,7 @@ class AwardController extends Controller {
 		$logged_user = auth()->user();
 		$companies = company::select('id', 'company_name')->get();
 		$award_types = AwardType::select('id', 'award_name')->get();
-
+        $publicTenantPath = tenantPath().'/uploads/award_photos/';
 
 		if ($logged_user->can('view-award'))
 		{
@@ -72,7 +73,7 @@ class AwardController extends Controller {
 					->make(true);
 			}
 
-			return view('core_hr.award.index', compact('companies', 'award_types'));
+			return view('core_hr.award.index', compact('companies', 'award_types','publicTenantPath'));
 		}
 
 		return abort('403', __('You are not authorized'));
@@ -127,13 +128,7 @@ class AwardController extends Controller {
 
 			if (isset($photo))
 			{
-				$photo_name = 'award';
-				if ($photo->isValid())
-				{
-					$file_name = preg_replace('/\s+/', '', $photo_name) . '_' . time() . '.' . $photo->getClientOriginalExtension();
-					$photo->storeAs('award_photos', $file_name);
-					$data['award_photo'] = $file_name;
-				}
+                $data['award_photo'] = Utility::imageFileStore($photo, tenantPath().'/uploads/award_photos/', 300, 200);
 			}
 
 			Award::create($data);
@@ -235,18 +230,10 @@ class AwardController extends Controller {
 			$data ['award_date'] = $request->award_date;
 
 			$photo = $request->award_photo;
-			$file_name = null;
-
 
 			if (isset($photo))
 			{
-				$photo_name = 'award';
-				if ($photo->isValid())
-				{
-					$file_name = preg_replace('/\s+/', '', $photo_name) . '_' . time() . '.' . $photo->getClientOriginalExtension();
-					$photo->storeAs('award_photos', $file_name);
-					$data['award_photo'] = $file_name;
-				}
+                $data['award_photo'] = Utility::imageFileStore($photo, tenantPath().'/uploads/award_photos/', 300, 200);
 			}
 
 

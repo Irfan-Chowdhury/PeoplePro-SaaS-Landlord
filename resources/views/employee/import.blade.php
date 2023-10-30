@@ -11,7 +11,7 @@
                <div id="form_result"></div>
             </div>
             <div class="card-body">
-                <h6><a href="{{url('sample_file/sample_employee.xlsx')}}" class="btn btn-primary"> <i
+                <h6><a href="{{url(tenantPath().'/sample_file/sample_employee.xlsx')}}" class="btn btn-primary"> <i
                     class="fa fa-download"></i> {{__('Download Sample File')}} </a></h6>
                 <p class="card-text">The first line in downloaded sample file should remain as it is. Please do not change
                     the order of columns in file.</p>

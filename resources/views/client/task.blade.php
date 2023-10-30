@@ -254,15 +254,16 @@
     </div>
 
     <script type="text/javascript">
-        (function($) {  
-        
+        (function($) {
+
             "use strict";
 
             $(document).ready(function () {
 
                 let date = $('.date');
+                let dateFormatJs = @json(session('dateFormatJs'));
                 date.datepicker({
-                    format: '{{ env('Date_Format_JS')}}',
+                    format: dateFormatJs,
                     autoclose: true,
                     todayHighlight: true
                 });
@@ -612,7 +613,7 @@
                 $('#client_task-table').DataTable().ajax.reload();
             });
 
-        })(jQuery); 
+        })(jQuery);
     </script>
 
 @endsection

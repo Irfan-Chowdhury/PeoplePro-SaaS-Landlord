@@ -136,14 +136,15 @@
 
 
     <script type="text/javascript">
-        (function($) {  
-        
+        (function($) {
+
             "use strict";
             $(document).ready(function () {
 
-                let date = $('.date');
+                var date = $('.date');
+                var dateFormatJs = @json(session('dateFormatJs'));
                 date.datepicker({
-                    format: '{{ env('Date_Format_JS')}}',
+                    format: dateFormatJs,
                     autoclose: true,
                     todayHighlight: true
                 });
@@ -409,8 +410,8 @@
                 $('#sample_form')[0].reset();
                 $('#client_project-table').DataTable().ajax.reload();
             });
-            
-        })(jQuery); 
+
+        })(jQuery);
     </script>
 
 @endsection

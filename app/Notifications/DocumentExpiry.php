@@ -50,7 +50,6 @@ class DocumentExpiry extends Notification implements ShouldQueue {
 	 */
 	public function toMail($notifiable)
 	{
-
 		return (new MailMessage)
 			->greeting('Hello!')
 			->subject('Document Expiring Reminder')

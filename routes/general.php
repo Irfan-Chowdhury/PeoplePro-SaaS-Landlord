@@ -5,9 +5,6 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Artisan;
 
 
-
-
-
 // Route::get('/documentation-attendance-device-addon', function() {
 //     return File::get(public_path() . '/documentation/attendance_device_addon/index.php');
 // });
@@ -21,7 +18,6 @@ Route::get('/documentation', function() {
 });
 
 Route::get('/documentation-attendance-device-addon', function() {
-    // return view('documentation/attendance_device_addon/index');
     return view('documentation.attendance_device_addon.index');
 });
 
@@ -47,6 +43,12 @@ Route::get('/maintainance-down', function() {
 
 Route::get('/maintainance-up', function() {
     Artisan::call('up');
+    return redirect()->back();
+});
+
+Route::get('/optimize-spatie-permission', function() {
+    Artisan::call('cache:clear');
+    Artisan::call('cache:forget spatie.permission.cache');
     return redirect()->back();
 });
 

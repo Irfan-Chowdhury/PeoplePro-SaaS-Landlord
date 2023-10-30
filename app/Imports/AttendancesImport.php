@@ -38,7 +38,7 @@ class AttendancesImport implements ToCollection,WithHeadingRow,ShouldQueue,WithC
                 ->select('id','office_shift_id')
                 ->where('staff_id',$row['staff_id'])->first();
 
-            $att_dt = Carbon::createFromFormat(env('Date_Format'), $row['attendance_date']);
+            $att_dt = Carbon::createFromFormat(session()->get('dateFormat'), $row['attendance_date']);
             $attendance_day_in =  strtolower($att_dt->format('l')).'_in';
             $attendance_day_out =  strtolower($att_dt->format('l')).'_out';
             try
@@ -69,12 +69,12 @@ class AttendancesImport implements ToCollection,WithHeadingRow,ShouldQueue,WithC
                 } // if employee is early or on time
                 else
                 {
-                    if(env('ENABLE_EARLY_CLOCKIN') == NULL) {
+                    if(session()->get('isEnableEarlyClockIn') == NULL) {
                         $clock_in = $shift_in;
                     }
                 }
 
-                if ($clock_out > $shift_in || env('ENABLE_EARLY_CLOCKIN')!=NULL) {
+                if ($clock_out > $shift_in || session()->get('isEnableEarlyClockIn')!=NULL) {
                     // if employee is early leaving
                     if ($clock_out < $shift_out) {
                         $timeDifference = $shift_out->diff($clock_out)->format('%H:%I');

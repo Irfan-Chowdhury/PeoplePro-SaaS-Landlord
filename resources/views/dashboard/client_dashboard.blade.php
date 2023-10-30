@@ -11,8 +11,8 @@
             <div class="row">
 
                 <div class="col-3 col-md-2 mb-3">
-                    <img src={{ URL::to('/uploads/profile_photos')}}/{{$user->profile_photo ?? 'avatar.jpg'}}  width='150'
-                         class='rounded-circle'>
+                    <img src="{{asset('../../'.tenantPath().'/uploads/profile_photos/'.$user->profile_photo)}}" width="140" height="70" class='rounded-circle'>
+
                 </div>
 
                 <div class="col-9 col-md-10 mb-3">

@@ -10,11 +10,15 @@ use App\Contracts\PaymentSettingContract;
 use App\Contracts\SeoSettingContract;
 use App\Facades\Alert;
 use App\Facades\Utility;
+use App\Http\traits\ENVFilePutContent;
 use Exception;
+use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\File;
 
 class SettingService
 {
+
+    use ENVFilePutContent;
 
     private $siteLogoPath = "landlord/images/logo/";
     private $ogImagePath = "landlord/images/seo-setting/";
@@ -69,13 +73,16 @@ class SettingService
                 'developed_by' =>  $request->developed_by,
             ];
 
+            $this->dataWriteInENVFile('APP_TIMEZONE',$request->time_zone);
+
+
             $imageName = $this->imageHandle($request->site_logo, $this->siteLogoPath);
             if($imageName) {
                 $data['site_logo'] = $imageName;
             }
             $this->generalSettingContract->updateOrCreate([], $data);
 
-            Utility::setEnv('APP_NAME', $data['site_title']);
+            Utility::setEnv('APP_NAME','"'.$data['site_title'].'"');
 
             return Alert::successMessage('Data Submitted Successfully');
         }
@@ -95,11 +102,13 @@ class SettingService
                 'from_address' => $request->from_address,
                 'from_name' => $request->from_name,
                 'username' => $request->username,
-                'password' => $request->password,
+                'password' => Crypt::encrypt($request->password),
                 'encryption' => $request->encryption,
             ];
 
             $this->mailSettingContract->updateOrCreate([], $data);
+
+            $this->dataWriteInENVFile('MAIL_PASSWORD', $request->password ?? null);
 
             return Alert::successMessage('Data Submitted Successfully');
         }
@@ -113,18 +122,46 @@ class SettingService
         try {
             $data = [
                 'active_payment_gateway' => implode(",", $request->active_payment_gateway),
-                'stripe_public_key'  => $request->stripe_public_key,
-                'stripe_secret_key' => $request->stripe_secret_key,
-                'paystack_public_key' => $request->paystack_public_key,
-                'paystack_secret_key' => $request->paystack_secret_key,
-                'paypal_client_id' => $request->paypal_client_id,
-                'paypal_client_secret' => $request->paypal_client_secret,
-                'razorpay_number' => $request->razorpay_number,
-                'razorpay_key' => $request->razorpay_key,
-                'razorpay_secret' => $request->razorpay_secret,
+
+                'stripe_public_key'  => Crypt::encrypt($request->stripe_public_key),
+                'stripe_secret_key' => Crypt::encrypt($request->stripe_secret_key),
+                'stripe_currency' => Crypt::encrypt($request->stripe_currency),
+
+                'paypal_mode' => $request->paypal_mode,
+                'paypal_client_id' => Crypt::encrypt($request->paypal_client_id),
+                'paypal_client_secret' => Crypt::encrypt($request->paypal_client_secret),
+
+                // 'razorpay_number' => $request->razorpay_number,
+                'razorpay_key' => Crypt::encrypt($request->razorpay_key),
+                'razorpay_secret' => Crypt::encrypt($request->razorpay_secret),
+
+                'paystack_public_key' => Crypt::encrypt($request->paystack_public_key),
+                'paystack_secret_key' => Crypt::encrypt($request->paystack_secret_key),
             ];
 
             $this->paymentSettingContract->updateOrCreate([], $data);
+
+            // Stripe
+            $this->dataWriteInENVFile('STRIPE_KEY', $request->stripe_public_key ?? null);
+            $this->dataWriteInENVFile('STRIPE_SECRET', $request->stripe_secret_key ?? null);
+            $this->dataWriteInENVFile('STRIPE_CURRENCY', $request->stripe_currency ?? null);
+
+            // Paypal
+            $this->dataWriteInENVFile('PAYPAL_MODE', $request->paypal_mode ?? null);
+            $this->dataWriteInENVFile('PAYPAL_SANDBOX_CLIENT_ID', $request->paypal_client_id ?? null);
+            $this->dataWriteInENVFile('PAYPAL_SANDBOX_CLIENT_SECRET', $request->paypal_client_secret ?? null);
+
+            // Razorpay
+            $this->dataWriteInENVFile('RAZORPAY_KEY', $request->razorpay_key ?? null);
+            $this->dataWriteInENVFile('RAZORPAY_SECRET', $request->razorpay_secret ?? null);
+
+            // Paystack
+            $this->dataWriteInENVFile('PAYSTACK_PUBLIC_KEY', $request->paystack_public_key ?? null);
+            $this->dataWriteInENVFile('PAYSTACK_SECRET_KEY', $request->paystack_secret_key ?? null);
+            $this->dataWriteInENVFile('PAYSTACK_PAYMENT_URL', $request->paystack_payment_url ?? null);
+            $this->dataWriteInENVFile('MERCHANT_EMAIL', $request->paystack_merchant_email ?? null);
+            $this->dataWriteInENVFile('PAYSTACK_CURRENCY', $request->paystack_currency ?? null);
+
 
             return Alert::successMessage('Data Submitted Successfully');
         }

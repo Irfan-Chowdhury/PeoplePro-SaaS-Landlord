@@ -22,8 +22,7 @@ class AttendancesImportDevice implements ToCollection, WithStartRow, ShouldQueue
         {
             $staff_id = $row[0];
             $dt_time = explode(' ', $row[1], 2);
-
-            $attendance_date_day = Carbon::createFromFormat(env('ATTENDANCE_DEVICE_DATE_FORMAT'), $dt_time[0]);
+            $attendance_date_day = Carbon::createFromFormat(session()->get('attendanceDeviceDateFormat'), $dt_time[0]);
             $att_time = new DateTime(Carbon::parse($dt_time[1])->format('H:i'));
 
             $data = [];
@@ -44,7 +43,7 @@ class AttendancesImportDevice implements ToCollection, WithStartRow, ShouldQueue
                     ->where('employee_id', $employee_id)->orderBy('id', 'desc')->first() ?? null;
 
             $data['employee_id'] = $employee_id;
-            $data['attendance_date'] = $attendance_date_day->format(env('Date_Format'));
+            $data['attendance_date'] = $attendance_date_day->format(session()->get('dateFormat'));
 
             //if employee attendance record was not found
             // FOR CLOCK IN
@@ -59,7 +58,7 @@ class AttendancesImportDevice implements ToCollection, WithStartRow, ShouldQueue
                 } // if employee is early or on time
                 else
                 {
-                    if(env('ENABLE_EARLY_CLOCKIN')!=NULL) {
+                    if(session()->get('isEnableEarlyClockIn')!=NULL) {
                         $data['clock_in'] = $att_time->format('H:i');
                     }
                     else {
@@ -79,7 +78,7 @@ class AttendancesImportDevice implements ToCollection, WithStartRow, ShouldQueue
             else {
                 //checking if the employee is not both clocked in + out (1)
                 if ($employee_attendance_last->clock_in_out == 1) {
-                    if ($att_time > $shift_in || env('ENABLE_EARLY_CLOCKIN')!=NULL) {
+                    if ($att_time > $shift_in || session()->get('isEnableEarlyClockIn')!=NULL) {
                         $employee_last_clock_in = new DateTime($employee_attendance_last->clock_in);
                         $data['clock_out'] = $att_time->format('H:i');
                         // if employee is early leaving

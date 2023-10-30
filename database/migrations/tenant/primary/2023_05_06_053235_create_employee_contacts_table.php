@@ -18,7 +18,7 @@ return new class extends Migration
             $table->unsignedBigInteger('employee_id');
             $table->string('relation', 50);
             $table->boolean('is_primary')->default(0);
-            $table->boolean('is_dependent')->default(0);
+            $table->boolean('is_dependent')->nullable();
             $table->string('contact_name', 191);
             $table->string('work_phone', 191)->nullable();
             $table->string('work_phone_ext', 191)->nullable();

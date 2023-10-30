@@ -35,9 +35,6 @@ class PaymentController extends Controller
 
     public function index()
     {
-        // $payments = Payment::with('tenant','domainInfo')->get();
-        // return $payments;
-
         return view('landlord.super-admin.pages.payments.index');
     }
 
@@ -93,6 +90,8 @@ class PaymentController extends Controller
                 return view('landlord.public-section.pages.payment.paypal',compact('socials', 'pages','paymentMethod','tenantRequestData','totalAmount'));
             case 'razorpay':
                 return view('landlord.public-section.pages.payment.razorpay',compact('socials', 'pages','paymentMethod','tenantRequestData','totalAmount'));
+            case 'paystack':
+                return view('landlord.public-section.pages.payment.paystack',compact('socials', 'pages','paymentMethod','tenantRequestData','totalAmount'));
             default:
                 break;
         }
@@ -106,17 +105,22 @@ class PaymentController extends Controller
             $tenantRequestData = json_decode(str_replace('&quot;', '"', $request->tenantRequestData));
 
             $payment = self::paymentPayConfirm($paymentMethod, $tenantRequestData, $paymentRequestData);
+
             if(isset($tenantRequestData->is_new_tenant) && (int) $tenantRequestData->is_new_tenant ===1) {
                 $tenant = $this->tenantService->NewTenantGenerate($tenantRequestData);
             } else {
                 $tenant = self::existingTenantHandle($tenantRequestData);
             }
-            // $tenantId = isset($tenant) ? $tenant->id : $tenantRequestData->tenant_id;
             $tenantId = $tenant->id;
             self::landlordHandle($payment, $tenantId);
 
-
             DB::commit();
+
+            if ($paymentMethod === 'paystack' && Session::has('authorization_url')) {
+                Session::put('tenantId', $tenantId);
+                Session::put('domain', $tenant->domainInfo->domain);
+                return redirect(Session::get('authorization_url'));
+            }
 
             $result =  Alert::successMessage('Data Created Successfully');
             if (request()->ajax()) {
@@ -163,11 +167,29 @@ class PaymentController extends Controller
 
     public function paymentSuccess($domain)
     {
+        if(!$domain) {
+            $domain = Session::get('domain');
+        }
+
         $socials = $this->socialContract->getOrderByPosition(); //Common
         $pages =  $this->pageContract->getAllByLanguageId($this->languageId); //Common
-        return view('landlord.public-section.pages.payment.payment_success', compact('socials','pages','domain'));
 
+        return view('landlord.public-section.pages.payment.payment_success', compact('socials','pages','domain'));
     }
 
+    public function handleGatewayCallback(PaymentService $paymentService)
+    {
+        try {
+            $payment = $paymentService->initialize('paystack');
+            $payment->paymentCallback();
 
+            Session::forget(['paymentId','reference','authorization_url','tenantId']);
+
+            return redirect()->route('payment.success', Session::get('domain'));
+        }
+        catch (Exception $e) {
+
+            return redirect()->back()->withErrors(['errors' => [$e->getMessage()]]);
+        }
+    }
 }

@@ -15,7 +15,7 @@
                         </div>
                         <div class="card-body collapse show" id="gs_collapse">
                             <p class="italic">
-                                <small>{{ trans('file.The field labels marked with * are required input fields') }}.</small>
+                                <small>@lang('file.The field labels marked with * are required input fields.')</small>
                             </p>
                             <div id="custom-field">
 

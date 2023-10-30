@@ -591,7 +591,7 @@ class PayrollController extends Controller {
 
 					$finance_data['account_id'] = config('variable.account_id');
 					$finance_data['amount'] = $request->net_salary;
-					$finance_data ['expense_date'] = now()->format(env('Date_Format'));
+					$finance_data ['expense_date'] = now()->format(session()->get('dateFormat'));
 					$finance_data ['expense_reference'] = trans('file.Payroll');
 
 
@@ -890,7 +890,7 @@ class PayrollController extends Controller {
 
 						$finance_data['account_id'] = config('variable.account_id');
 						$finance_data['amount'] = $total_sum;
-						$finance_data ['expense_date'] = now()->format(env('Date_Format'));
+						$finance_data ['expense_date'] = now()->format(session()->get('dateFormat'));
 						$finance_data ['expense_reference'] = trans('file.Payroll');
 
 

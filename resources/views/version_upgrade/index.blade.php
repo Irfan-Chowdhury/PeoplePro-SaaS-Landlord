@@ -1,6 +1,6 @@
-@extends('layout.main')
-@section('title','Admin | New Release Version')
-@section('content')
+@extends('landlord.super-admin.layouts.master')
+@section('title','Super Admin | New Release Version')
+@section('landlord-content')
 
     <div class="mt-3 mb-3" id="errorMessage"></div>
 

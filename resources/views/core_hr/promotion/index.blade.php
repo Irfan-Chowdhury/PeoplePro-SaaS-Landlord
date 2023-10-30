@@ -218,12 +218,14 @@
         "use strict";
         $(document).ready(function () {
 
-            let date = $('.date');
+            var date = $('.date');
+            var dateFormatJs = @json(session('dateFormatJs'));
             date.datepicker({
-                format: '{{ env('Date_Format_JS')}}',
+                format: dateFormatJs,
                 autoclose: true,
                 todayHighlight: true
             });
+
 
 
             let table_table = $('#promotion-table').DataTable({

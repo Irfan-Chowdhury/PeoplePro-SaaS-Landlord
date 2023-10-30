@@ -3,7 +3,7 @@
 
     <section>
 
-        @can('store-assets-category')
+        @can('store-category')
             <div class="container-fluid">
                 <div class="card">
                     <div class="card-body">

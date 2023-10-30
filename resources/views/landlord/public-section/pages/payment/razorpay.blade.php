@@ -1,4 +1,6 @@
 @extends('landlord.public-section.layouts.master')
+@section('public-title', config('app.name').' | '.'Razorpay')
+
 @section('public-content')
 <div class="row">
     <div class="col-12">
@@ -32,7 +34,7 @@
                     <input type="hidden" name="totalAmount" value="{{ $totalAmount }}">
 
                     <script src="https://checkout.razorpay.com/v1/checkout.js"
-                        data-key="{{ env('RAZORPAY_KEY') }}"
+                        data-key="{{ config('payment_gateway.razorpay.key') }}"
                         data-amount="{{ $totalAmount * 100 }}"
                         data-name=""
                         data-description="Razorpay"

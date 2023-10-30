@@ -7,41 +7,7 @@ use Illuminate\Support\Facades\Route;
 
 class RouteServiceProvider extends ServiceProvider
 {
-    // protected $namespace = 'App\Http\Controllers';
-    // protected $namespace = 'App\Http\Controllers'; // Hide for laravel-7
-
     public const HOME = 'profile';
-
-    // public function boot()
-    // {
-    //     parent::boot();
-    // }
-    // public function map()
-    // {
-    //     $this->mapApiRoutes();
-    //     $this->mapWebRoutes();
-    // }
-
-    // protected function mapWebRoutes()
-    // {
-    //     Route::middleware('web')
-    //          ->namespace($this->namespace)
-    //          ->group(base_path('routes/web.php'));
-
-    //     Route::middleware('web')
-    //          ->namespace($this->namespace)
-    //          ->group(base_path('routes/general.php'));
-    // }
-
-    // protected function mapApiRoutes()
-    // {
-    //     Route::prefix('api')
-    //          ->middleware('api')
-    //          ->namespace($this->namespace)
-    //          ->group(base_path('routes/api.php'));
-    // }
-
-
 
     // ================== SAAS =============
 

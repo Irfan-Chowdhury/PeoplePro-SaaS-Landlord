@@ -3,7 +3,6 @@
 
 namespace App\Http\Controllers\Variables;
 
-
 use App\Models\TravelType;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -22,7 +21,7 @@ class TravelMethodController {
 				})
 				->addColumn('action', function ($data)
 				{
-					if (auth()->user()->can('user-edit'))
+					if (auth()->user()->can('access-variable_method'))
 					{
 						$button = '<button type="button" name="edit" id="' . $data->id . '" class="travel_edit btn btn-primary btn-sm"><i class="dripicons-pencil"></i></button>';
 						$button .= '&nbsp;&nbsp;';
@@ -45,7 +44,7 @@ class TravelMethodController {
 	{
 		$logged_user = auth()->user();
 
-		if ($logged_user->can('user-add'))
+		if ($logged_user->can('access-variable_method'))
 		{
 			$validator = Validator::make($request->only('arrangement_type'),
 				[
@@ -78,20 +77,7 @@ class TravelMethodController {
 	}
 
 
-	/**
-	 * Display the specified resource.
-	 *
-	 * @param int $id
-	 * @return \Illuminate\Http\Response
-	 */
 
-
-	/**
-	 * Show the form for editing the specified resource.
-	 *
-	 * @param int $id
-	 * @return \Illuminate\Http\Response
-	 */
 	public function edit($id)
 	{
 		if(request()->ajax())
@@ -102,18 +88,11 @@ class TravelMethodController {
 		}
 	}
 
-	/**
-	 * Update the specified resource in storage.
-	 *
-	 * @param \Illuminate\Http\Request $request
-	 * @param int $id
-	 * @return \Illuminate\Http\Response
-	 */
 	public function update(Request $request)
 	{
 		$logged_user = auth()->user();
 
-		if ($logged_user->can('user-edit'))
+		if ($logged_user->can('access-variable_method'))
 		{
 			$id = $request->get('hidden_travel_id');
 
@@ -150,22 +129,16 @@ class TravelMethodController {
 		}
 	}
 
-	/**
-	 * Remove the specified resource from storage.
-	 *
-	 * @param int $id
-	 * @return \Illuminate\Http\Response
-	 */
+
 	public function destroy($id)
 	{
-		if(!env('USER_VERIFIED'))
-		{
+		if(!env('USER_VERIFIED')){
 			return response()->json(['error' => 'This feature is disabled for demo!']);
 		}
 		$logged_user = auth()->user();
 
-		if ($logged_user->can('user-delete'))
-		{
+
+		if ($logged_user->can('access-variable_method')) {
 			TravelType::whereId($id)->delete();
 			return response()->json(['success' => __('Data is successfully deleted')]);
 		}

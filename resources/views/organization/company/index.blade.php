@@ -276,6 +276,10 @@
 <script type="text/javascript">
     (function($) {
         "use strict";
+
+        let tenantPath = @json($publicTenantPath)
+
+
         $(document).ready(function () {
 
             $('#company-table').DataTable({
@@ -511,7 +515,7 @@
                     $('#tax_no').val(html.data.tax_no);
                     $('#location_id').selectpicker('val', html.data.location_id);
                     if (html.data.company_logo) {
-                        $('#store_logo').html("<img src={{ URL::to('/public') }}/uploads/company_logo/" + html.data.company_logo + " width='70'  class='img-thumbnail' />");
+                        $('#store_logo').html("<img src={{ URL::to('/') }}/" + tenantPath + html.data.company_logo + " width='70'  class='img-thumbnail' />");
                         $('#store_logo').append("<input type='hidden' name='hidden_image' value='" + html.data.company_logo + "'  />");
                     }
                     $('#hidden_id').val(html.data.id);
@@ -522,6 +526,8 @@
                 }
             })
         });
+
+
 
 
         $(document).on('click', '.show_new', function () {
@@ -552,7 +558,7 @@
                     $('#country_id').html(result.data.location.country.name);
                     $('#zip_id').html(result.data.location.zip);
                     if (result.data.company_logo) {
-                        $('#logo_id').html("<img src={{ URL::to('/public') }}/uploads/company_logo/" + result.data.company_logo + " width='70'  class='img-thumbnail' />");
+                        $('#logo_id').html("<img src={{ URL::to('/') }}/" + tenantPath + result.data.company_logo + " width='70'  class='img-thumbnail' />");
                         $('#logo_id').append("<input type='hidden'  name='hidden_image' value='" + result.data.company_logo + "'  />");
                     }
                     $('#company_modal').modal('show');
@@ -629,7 +635,7 @@
                 },
                 success: function (data) {
                     console.log(data);
-                    
+
                     let html = '';
                     if (data.success) {
                         html = '<div class="alert alert-success">' + data.success + '</div>';

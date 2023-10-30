@@ -3,7 +3,7 @@
 
 namespace App\Http\Controllers\FrontEnd;
 
-
+use App\Facades\Utility;
 use App\Models\JobCandidate;
 use App\Models\JobCategory;
 use App\Models\JobPost;
@@ -13,7 +13,8 @@ use Illuminate\Support\Str;
 
 class JobController {
 
-	public function index(){
+	public function index()
+    {
 
 		$job_posts = JobPost::with('PostJobCategory:id,job_category,url',
 			'Company:id,company_name')
@@ -74,7 +75,8 @@ class JobController {
 
 	}
 
-	public function applyForJob(Request $request,$id){
+	public function applyForJob(Request $request,$id)
+    {
 
 		$validator = Validator::make($request->only('full_name', 'email', 'phone', 'cover_letter',
 			 'cv'),
@@ -116,21 +118,7 @@ class JobController {
 		$data['cover_letter'] = $request->cover_letter;
 		$data['status'] =  'applied';
 
-		$cv =  $request->cv;
-
-		$file_name = null;
-
-
-
-		if (isset($cv))
-		{
-			if ($cv->isValid())
-			{
-				$file_name = preg_replace('/\s+/', '', $request->full_name) . '_' . time() . '.' . $cv->getClientOriginalExtension();
-				$cv->storeAs('candidate_cv', $file_name);
-				$data['cv'] = $file_name;
-			}
-		}
+        $data['cv'] = Utility::fileUploadHandle($request->cv, tenantPath().'/uploads/candidate_cv', $request->full_name);
 
 		JobCandidate::create($data);
 

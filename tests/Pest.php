@@ -12,17 +12,17 @@
 |
 */
 
-uses(
-    Tests\TestCase::class,
-    Illuminate\Foundation\Testing\RefreshDatabase::class,
-    Tests\Authenticate::class,
-    // App\Http\traits\TestTrait::class,
-)->in('Feature');
+// uses(
+//     Tests\TestCase::class,
+//     Illuminate\Foundation\Testing\RefreshDatabase::class,
+//     Tests\Authenticate::class,
+//     // App\Http\traits\TestTrait::class,
+// )->in('Feature');
 
 uses(
     Tests\TestCase::class,
     App\Http\traits\PermissionHandleTrait::class,
-    Tests\Traits\PermissionTestTrait::class,
+    // Tests\Traits\PermissionTestTrait::class,
 )->in('Unit');
 
 /*

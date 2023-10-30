@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Facades\Utility;
 use App\Models\Employee;
 use App\Models\Client;
 use App\Models\Role_User;
@@ -13,8 +14,8 @@ use Spatie\Permission\Models\Role;
 
 class AllUserController extends Controller {
 
-    public function index(){
-
+    public function index()
+    {
         $logged_user = auth()->user();
 
         //$users = User::with('RoleUser')->orderByDesc('is_active');
@@ -32,7 +33,7 @@ class AllUserController extends Controller {
                         {
                             if ($row->profile_photo)
                             {
-                                $url = url("uploads/profile_photos/".$row->profile_photo);
+                                $url = url(tenantPath()."/uploads/profile_photos/".$row->profile_photo);
                                 $profile_photo = '<img src="'. $url .'" class="profile-photo md" style="height:35px;width:35px"/>';
                             }
                             else {
@@ -110,28 +111,12 @@ class AllUserController extends Controller {
 		}
 	}
 
-	// public function add_user_form()
-	// {
-
-	// 	$logged_user = auth()->user();
-
-	// 	if ($logged_user->can('store-user'))
-	// 	{
-
-	// 		$data['roles'] = Role_User::select('id', 'role_name')->limit(2)->get();
-
-	// 		return view('all_user.add_user_form', $data);
-	// 	}
-
-	// 	return abort('403', __('You are not authorized'));
-	// }
-
 
 	public function add_user_process(Request $request)
 	{
 		$logged_user = auth()->user();
 
-		if ($logged_user->can('store-employee'))
+		if ($logged_user->can('store-user'))
 		{
 
 			$validator = Validator::make($request->all(),
@@ -146,8 +131,7 @@ class AllUserController extends Controller {
 				]
 			);
 
-			if ($validator->fails())
-			{
+			if ($validator->fails()) {
 				return response()->json(['errors' => $validator->errors()->all()]);
 			}
 
@@ -162,33 +146,14 @@ class AllUserController extends Controller {
 			$data['is_active'] 	= $request->is_active;
 			$data['role_users_id'] = 1;
 
-			$photo = $request->profile_photo;
-			$file_name = null;
-
-
-			if (isset($photo))
-			{
-				$new_user = $request->username;
-				if ($photo->isValid())
-				{
-					$file_name = preg_replace('/\s+/', '', $new_user) . '_' . time() . '.' . $photo->getClientOriginalExtension();
-					$photo->storeAs('profile_photos', $file_name);
-					$data['profile_photo'] = $file_name;
-				}
-			}
+            $fileName = Utility::imageFileStore($request->profile_photo, tenantPath().'/uploads/profile_photos/', 300, 200);
+            $data['profile_photo'] = $fileName;
 
 			$user = User::create($data);
-
-
 			$user->syncRoles(1);
-
-
 			return response()->json(['success' => __('Data Added successfully.')]);
 		}
-
-
 		return abort('403', __('You are not authorized'));
-
 	}
 
 	public function process_update(Request $request)
@@ -232,27 +197,15 @@ class AllUserController extends Controller {
 			$data['is_active']  = $request->is_active;
 
 
+            if (isset($request->profile_photo)) {
+                $user = User::find($id);
+                $directory = tenantPath().'/uploads/profile_photos/';
+                Utility::fileDelete($directory, $user->profile_photo);
 
+                $fileName = Utility::imageFileStore($request->profile_photo, $directory, 300, 200);
+                $data['profile_photo'] = $fileName;
+            }
 
-			$photo = $request->profile_photo;
-			$file_name = null;
-
-
-			if (isset($photo))
-			{
-				$new_user = $request->username;
-				if ($photo->isValid())
-				{
-					$file_name = preg_replace('/\s+/', '', $new_user) . '_' . time() . '.' . $photo->getClientOriginalExtension();
-					$photo->storeAs('profile_photos', $file_name);
-					$data['profile_photo'] = $file_name;
-				}
-			}
-
-			// if (isset($request->password))
-			// {
-			// 	$data['password'] = bcrypt($request->password);
-			// }
             if ($request->password)
 			{
 				$data['password'] = bcrypt($request->password);
@@ -351,7 +304,7 @@ class AllUserController extends Controller {
 
 			if ($file_path)
 			{
-				$file_path = public_path('uploads/profile_photos/' . $file_path);
+				$file_path = public_path(tenantPath().'/uploads/profile_photos/' . $file_path);
 				if (file_exists($file_path))
 				{
 					unlink($file_path);

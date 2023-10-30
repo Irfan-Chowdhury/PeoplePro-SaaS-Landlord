@@ -59,35 +59,43 @@ trait AutoUpdateTrait{
         if (!$isServerConnectionOk) {
             $returnData['alertVersionUpgradeEnable'] = $alertVersionUpgradeEnable;
             $returnData['alertBugEnable'] = $alertBugEnable;
-            return $returnData;
         };
 
         $data = $this->getDemoGeneralDataByCURL();
         $productMode = $data->general->product_mode;
-        $clientVersionNumber = $this->stringToNumberConvert(config('auto_update.version'));
-        $clientBugNo = intval(config('auto_update.bug_no'));
-        $demoVersionString      = $data->general->demo_version;
-        $demoVersionNumber      = $this->stringToNumberConvert($demoVersionString);
-        $demoBugNo              = $data->general->demo_bug_no;
-        $minimumRequiredVersion = $this->stringToNumberConvert($data->general->minimum_required_version);
-        $latestVersionUpgradeEnable   = $data->general->latest_version_upgrade_enable;
-        $bugUpdateEnable        = $data->general->bug_update_enable;
+        $clientVersionNumber = config('auto_update.version');
+        $demoVersionNumber = $data->general->demo_version;
+        $minimumRequiredVersion = $data->general->minimum_required_version;
 
-        // $alertVersionUpgradeEnable = false;
-        // $alertBugEnable = false;
+        $isVersionGreater = $this->compareVersionNumber($clientVersionNumber, $demoVersionNumber);
+        if($minimumRequiredVersion == $clientVersionNumber)
+            $isVersionMinimum = true;
+        else
+            $isVersionMinimum = $this->compareVersionNumber($minimumRequiredVersion, $clientVersionNumber);
+        $latestVersionUpgradeEnable = $data->general->latest_version_upgrade_enable;
 
-        if ($clientVersionNumber >= $minimumRequiredVersion && $latestVersionUpgradeEnable===true && $productMode==='DEMO' && $demoVersionNumber > $clientVersionNumber) {
+        if ($isVersionMinimum && $latestVersionUpgradeEnable===true && $productMode==='DEMO' && $isVersionGreater) {
             $alertVersionUpgradeEnable = true;
-        }
-
-        if ($clientVersionNumber >= $minimumRequiredVersion && $demoVersionNumber === $clientVersionNumber && $demoBugNo > $clientBugNo && $bugUpdateEnable ===true && $productMode==='DEMO') {
-            $alertBugEnable = true;
         }
 
         $returnData['generalData'] = $data;
         $returnData['alertVersionUpgradeEnable'] = $alertVersionUpgradeEnable;
         $returnData['alertBugEnable'] = $alertBugEnable;
         return $returnData;
+    }
+
+    public function compareVersionNumber($clientVersionNumber, $demoVersionNumber)
+    {
+        $clientVersionArray = explode(".", $clientVersionNumber);
+        $demoVersionArray = explode(".", $demoVersionNumber);
+        $flag = false;
+        for ($i=0; $i < count($demoVersionArray); $i++) {
+            if($clientVersionArray[$i] < $demoVersionArray[$i]) {
+                $flag = true;
+                break;
+            }
+        }
+        return $flag;
     }
 
     public function getVersionUpgradeDetails()

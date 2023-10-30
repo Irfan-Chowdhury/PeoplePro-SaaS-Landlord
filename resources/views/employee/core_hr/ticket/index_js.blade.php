@@ -1,11 +1,14 @@
 
     $('#employee_ticket-table').DataTable().clear().destroy();
-    var date = $('.date');
+
+    let date = $('.date');
+    let dateFormatJs = @json(session('dateFormatJs'));
     date.datepicker({
-        format: '{{ env('Date_Format_JS')}}',
+        format: dateFormatJs,
         autoclose: true,
         todayHighlight: true
     });
+
 
     let table_table = $('#employee_ticket-table').DataTable({
         initComplete: function () {

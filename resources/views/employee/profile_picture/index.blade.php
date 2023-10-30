@@ -1,7 +1,7 @@
 <span id="profile_form_result"></span>
 <div id="employee_profile_photo">
     @if($employee->user->profile_photo)
-        <div><img src="{{url('uploads/profile_photos',$employee->user->profile_photo)}}" height="100"
+        <div><img src="{{url(tenantPath().'/uploads/profile_photos',$employee->user->profile_photo)}}" height="100"
                   width="100">
         </div>
     @else

@@ -12,9 +12,7 @@ class PaymentMethodController {
 
 	public function index()
 	{
-
-		if (request()->ajax())
-		{
+		if (request()->ajax()) {
 			return datatables()->of(PaymentMethod::select('id', 'method_name','payment_percentage','account_number')->get())
 				->setRowId(function ($payment_method)
 				{
@@ -22,7 +20,7 @@ class PaymentMethodController {
 				})
 				->addColumn('action', function ($data)
 				{
-					if (auth()->user()->can('user-edit'))
+					if (auth()->user()->can('access-variable_method'))
 					{
 						$button = '<button type="button" name="edit" id="' . $data->id . '" class="payment_edit btn btn-primary btn-sm"><i class="dripicons-pencil"></i></button>';
 						$button .= '&nbsp;&nbsp;';
@@ -36,16 +34,14 @@ class PaymentMethodController {
 				})
 				->rawColumns(['action'])
 				->make(true);
-
 		}
-
 	}
 
 	public function store(Request $request)
 	{
 		$logged_user = auth()->user();
 
-		if ($logged_user->can('user-add'))
+		if ($logged_user->can('access-variable_method'))
 		{
 			$validator = Validator::make($request->only('method_name','payment_percentage','account_number'),
 				[
@@ -80,42 +76,20 @@ class PaymentMethodController {
 	}
 
 
-	/**
-	 * Display the specified resource.
-	 *
-	 * @param int $id
-	 * @return \Illuminate\Http\Response
-	 */
-
-
-	/**
-	 * Show the form for editing the specified resource.
-	 *
-	 * @param int $id
-	 * @return \Illuminate\Http\Response
-	 */
 	public function edit($id)
 	{
-		if(request()->ajax())
-		{
+		if(request()->ajax()) {
 			$data = PaymentMethod::findOrFail($id);
-
 			return response()->json(['data' => $data]);
 		}
 	}
 
-	/**
-	 * Update the specified resource in storage.
-	 *
-	 * @param \Illuminate\Http\Request $request
-	 * @param int $id
-	 * @return \Illuminate\Http\Response
-	 */
+    
 	public function update(Request $request)
 	{
 		$logged_user = auth()->user();
 
-		if ($logged_user->can('user-edit'))
+		if ($logged_user->can('access-variable_method'))
 		{
 			$id = $request->get('hidden_payment_id');
 
@@ -167,7 +141,7 @@ class PaymentMethodController {
 		}
 		$logged_user = auth()->user();
 
-		if ($logged_user->can('user-delete'))
+		if ($logged_user->can('access-variable_method'))
 		{
 			PaymentMethod::whereId($id)->delete();
 			return response()->json(['success' => __('Data is successfully deleted')]);

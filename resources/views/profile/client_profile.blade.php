@@ -14,8 +14,7 @@
 
                         <div class="container">
                             @if ($user->profile_photo)
-                                <td> <img src="{{ url('uploads/profile_photos', $user->profile_photo) }}" height="120"
-                                        width="120">
+                                <td> <img src="{{url('../../'.tenantPath().'/uploads/profile_photos', $user->profile_photo) }}" height="120" width="120">
                                 </td>
                             @else
                                 <td> <img src="{{ url('logo/avatar.jpg') }}" height="120" width="120">

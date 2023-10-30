@@ -5,7 +5,7 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>PeoplePro | Login</title>
+    <title>PeoplePro SAAS | Login</title>
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="robots" content="all,follow">
@@ -25,7 +25,13 @@
     <div class="container">
         <div class="form-outer text-center d-flex align-items-center">
             <div class="form-inner">
-                <div class="logo"><span>PeoplePro</span></div>
+                <div class="logo">
+                    <span>
+                    @if($generalSetting->site_title)
+                        {{ $generalSetting->site_title }}
+                    @endif
+                </span>
+            </div>
                 @include('shared.errors')
                 <form method="POST" action="{{ route('landlord.login.proccess') }}" id="login-form">
                     @csrf
@@ -70,11 +76,8 @@
                 </form>
                 <!-- This three buttons for demo only-->
 
-                @if (env('APP_ENV')=="local")
+                @if (env('PRODUCT_MODE')==="DEMO" || env('PRODUCT_MODE')==="DEVELOPER")
                     <button type="submit" class="btn btn-success btn-sm default admin-btn">LogIn as Admin</button>
-                    {{-- <button type="submit" class="btn btn-info btn-sm default staff-btn">LogIn as Staff</button>
-                    <button type="submit" class="btn btn-warning btn-sm default client-btn">LogIn as Client</button>
-                    <p class="text-center mt-4 text-danger font-weight-bold font-italic">[For attendance device related features, Need to purchase attendance device addon.]</p> --}}
                 @endif
 
                 <br><br>

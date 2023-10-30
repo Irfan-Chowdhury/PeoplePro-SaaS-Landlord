@@ -19,32 +19,32 @@ class EmployeeImmigration extends Model
 
 	public function setIssueDateAttribute($value)
 	{
-		$this->attributes['issue_date'] = Carbon::createFromFormat(env('Date_Format'), $value)->format('Y-m-d');
+		$this->attributes['issue_date'] = Carbon::createFromFormat(session()->get('dateFormat'), $value)->format('Y-m-d');
 	}
 
 //	public function getIssueDateAttribute($value)
 //	{
-//		return Carbon::parse($value)->format(env('Date_Format'));
+//		return Carbon::parse($value)->format(session()->get('dateFormat'));
 //	}
 
 	public function setExpiryDateAttribute($value)
 	{
-		$this->attributes['expiry_date'] = Carbon::createFromFormat(env('Date_Format'), $value)->format('Y-m-d');
+		$this->attributes['expiry_date'] = Carbon::createFromFormat(session()->get('dateFormat'), $value)->format('Y-m-d');
 	}
 
 //	public function getExpiryDateAttribute($value)
 //	{
-//		return Carbon::parse($value)->format(env('Date_Format'));
+//		return Carbon::parse($value)->format(session()->get('dateFormat'));
 //	}
 
 	public function setEligibleReviewDateAttribute($value)
 	{
-		$this->attributes['eligible_review_date'] = Carbon::createFromFormat(env('Date_Format'), $value)->format('Y-m-d');
+		$this->attributes['eligible_review_date'] = Carbon::createFromFormat(session()->get('dateFormat'), $value)->format('Y-m-d');
 	}
 
 //	public function getEligibleReviewDateAttribute($value)
 //	{
-//		return Carbon::parse($value)->format(env('Date_Format'));
+//		return Carbon::parse($value)->format(session()->get('dateFormat'));
 //	}
 
 }

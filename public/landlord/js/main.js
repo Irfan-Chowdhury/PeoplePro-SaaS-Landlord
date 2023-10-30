@@ -24,17 +24,9 @@
             }
         });
 
-        // $(document).ready(function(){
-        //     $(".sticker").sticky({ topSpacing: 80 });
-        // });
-
-        // $(window).on('scroll', function() {
-        //     if ($(window).scrollTop() >= $(
-        //       '.middle').offset().top + $('.middle').
-        //         outerHeight() - window.innerHeight) {
-        //         $(".sticker").css('position','relative');
-        //     }
-        // });
+        $(document).ready(function(){
+            $(".sticker").sticky({ topSpacing: 70 });
+        });
     }
 
     if (isMobile) {
@@ -91,13 +83,10 @@
     $(document).ready(function() {
 
         var swiper = new Swiper(".mySwiper", {
-            slidesPerView: 2,
+            slidesPerView: 3,
             spaceBetween: 50,
             autoHeight: true,
-            pagination: {
-              el: ".swiper-pagination",
-              clickable: true,
-            },
+            loop: true,
             navigation: {
                 nextEl: ".swiper-nav-next",
                 prevEl: ".swiper-nav-prev",

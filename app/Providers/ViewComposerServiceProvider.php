@@ -30,11 +30,16 @@ class ViewComposerServiceProvider extends ServiceProvider
                 'landlord.public-section.pages.landing-page.index',
                 'landlord.public-section.pages.renew.contact_for_renewal',
                 'landlord.super-admin.pages.dashboard.index',
+                'landlord.super-admin.partials.header',
+                'landlord.super-admin.auth.login',
+                'documentation-landlord.index',
             ], function ($view) use ($generalSetting) {
                 $view->with('generalSetting', $generalSetting);
             });
         }
-        else {
+        // else {
+        else if(Schema::hasTable('general_settings')) {
+
             $general_settings = TenantGeneralSetting::latest()->first();
 
             view()->composer([
@@ -43,32 +48,6 @@ class ViewComposerServiceProvider extends ServiceProvider
                 $view->with('general_settings', $general_settings);
             });
         }
-
-        // Procedure - 1
-        // $general_settings = GeneralSetting::latest()->first();
-
-        // view()->composer('layout.main_partials.header', function ($view) use ($generalSetting) {
-        //     $view->with('generalSetting', $generalSetting);
-        // });
-
-
-
-        // $general_settings = GeneralSetting::latest()->first();
-
-        // Procedure - 2
-        // view()->composer([
-        //     // 'layout.main',
-        //     // 'layout.main_partials.header',
-        //     // 'layout.main_partials.footer',
-        //     // 'projects.invoices.show',
-        //     // 'dashboard',
-        //     // 'layout.client',
-        //     // 'frontend.Layout.navigation',
-        //     // 'documentation.index',
-        //     // 'vendor.translation.layout'
-        // ], function ($view) use ($general_settings) {
-        //     $view->with('general_settings', $general_settings);
-        // });
     }
 }
 

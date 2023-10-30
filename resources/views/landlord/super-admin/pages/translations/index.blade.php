@@ -12,11 +12,13 @@
         <div class="container-fluid mt-3 mb-3">
             <div class="d-flex">
 
-                <div class="sm:hidden lg:flex items-center">
-                    <a href="{{ route('lang.translations.create', $language) }}" class="btn btn-primary mr-1">
-                        {{__('Add Translation')}}
-                    </a>
-                </div>
+                @if (env('PRODUCT_MODE') !== 'CLIENT')
+                    <div class="sm:hidden lg:flex items-center">
+                        <a href="{{ route('lang.translations.create', $language) }}" class="btn btn-primary mr-1">
+                            {{__('Add Translation')}}
+                        </a>
+                    </div>
+                @endif
 
                 {{-- <a href="{{ route('languages.create') }}" class="btn btn-primary mr-1">{{ __('Add') }}</a> --}}
                 <div class="w-20">

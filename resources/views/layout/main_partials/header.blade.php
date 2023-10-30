@@ -8,10 +8,9 @@
                 <a id="toggle-btn" href="#" class="menu-btn"><i class="dripicons-menu"> </i></a>
                 <span class="brand-big" id="site_logo_main">
                     @if($general_settings->site_logo)
-						<img src="{{asset('../../images/logo/'.$general_settings->site_logo)}}" width="140" height="70">
+						<img src="{{asset('../../'.tenantPath().'/images/logo/'.$general_settings->site_logo)}}" width="140" height="70">
                         &nbsp; &nbsp;
                     @endif
-                         {{-- <h1 class="d-inline" id="site_title_main">{{$general_settings->site_title ?? "No title"}}</h1> --}}
                 </span>
 
 
@@ -64,12 +63,11 @@
                         </a>
                     </li>
                 @endif
-
                     <li class="nav-item">
                         <a rel="nofollow" href="#" class="nav-link dropdown-item">
                             @if(!empty(auth()->user()->profile_photo))
                                 <img class="profile-photo sm mr-1"
-                                     src="{{ asset('../../uploads/profile_photos/')}}/{{auth()->user()->profile_photo}}">
+                                     src="{{ asset('../../tenants/'.tenant('id').'/uploads/profile_photos/')}}/{{auth()->user()->profile_photo}}">
                             @else
                                 <img class="profile-photo sm mr-1"
                                      src="{{ asset('../../uploads/profile_photos/avatar.jpg')}}">
@@ -83,22 +81,6 @@
                                     {{trans('file.Profile')}}
                                 </a>
                             </li>
-                            @if(auth()->user()->role_users_id == 1)
-                                <li id="empty_database">
-                                    <a href="#">
-                                        <i class="dripicons-stack"></i>
-                                        {{__('Empty Database')}}
-                                    </a>
-                                </li>
-                            @endif
-                            @if(auth()->user()->role_users_id == 1)
-                                <li id="export_database">
-                                    <a href="{{route('export_database')}}">
-                                        <i class="dripicons-cloud-download"></i>
-                                        {{__('Export Database')}}
-                                    </a>
-                                </li>
-                            @endif
                             <li>
                                 <form id="logout-form" action="{{ route('logout') }}" method="POST">
                                     @csrf

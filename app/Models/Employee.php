@@ -98,17 +98,17 @@ class Employee extends Model
 
 	public function setDateOfBirthAttribute($value)
 	{
-		$this->attributes['date_of_birth'] = Carbon::createFromFormat(env('Date_Format'), $value)->format('Y-m-d');
+		$this->attributes['date_of_birth'] = Carbon::createFromFormat(session()->get('dateFormat'), $value)->format('Y-m-d');
 	}
 
 	public function getDateOfBirthAttribute($value)
 	{
-		return Carbon::parse($value)->format(env('Date_Format'));
+		return Carbon::parse($value)->format(session()->get('dateFormat'));
 	}
 
 	public function setJoiningDateAttribute($value)
 	{
-		$this->attributes['joining_date'] = Carbon::createFromFormat(env('Date_Format'), $value)->format('Y-m-d');
+		$this->attributes['joining_date'] = Carbon::createFromFormat(session()->get('dateFormat'), $value)->format('Y-m-d');
 	}
 
 	public function getJoiningDateAttribute($value)
@@ -118,13 +118,13 @@ class Employee extends Model
 			return '';
 		}
 		else{
-			return Carbon::parse($value)->format(env('Date_Format'));
+			return Carbon::parse($value)->format(session()->get('dateFormat'));
 		}
 	}
 
 	public function setExitDateAttribute($value)
 	{
-		$this->attributes['exit_date'] = Carbon::createFromFormat(env('Date_Format'), $value)->format('Y-m-d');
+		$this->attributes['exit_date'] = Carbon::createFromFormat(session()->get('dateFormat'), $value)->format('Y-m-d');
 	}
 
 	public function getExitDateAttribute($value)
@@ -134,7 +134,7 @@ class Employee extends Model
 			return '';
 		}
 		else{
-			return Carbon::parse($value)->format(env('Date_Format'));
+			return Carbon::parse($value)->format(session()->get('dateFormat'));
 		}
 	}
 

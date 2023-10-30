@@ -1,4 +1,5 @@
 <?php
+// declare(strict_types=1);
 
 namespace App\Payment;
 
@@ -9,10 +10,10 @@ use Razorpay\Api\Api;
 
 class RazorpayPayment implements PaybleContract
 {
-    public function pay($tenantRequestData, $paymentRequestData)
+    public function pay($tenantRequestData, $paymentRequestData) : object
     {
         $input = $paymentRequestData;
-        $api = new Api (env('RAZORPAY_KEY'), env('RAZORPAY_SECRET'));
+        $api = new Api (config('payment_gateway.razorpay.key'), config('payment_gateway.razorpay.secret'));
         $razorPayment = $api->payment->fetch($input['razorpay_payment_id']);
 
         if(count($input) && !empty($input['razorpay_payment_id'])) {
@@ -26,7 +27,6 @@ class RazorpayPayment implements PaybleContract
                 'payment_method' => $tenantRequestData->payment_method,
                 'status' => 'paid',
                 'subscription_type' => $tenantRequestData->subscription_type,
-                // 'data' => json_encode($paymentRequestData)
                 'data' => json_encode(array_merge($paymentRequestData, ['razorpayResponse' => (array)$razorpayResponse]))
             ]);
         }

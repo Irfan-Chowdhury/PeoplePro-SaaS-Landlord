@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Facades\Utility;
 use App\Models\company;
 use App\Models\location;
 use Exception;
@@ -14,7 +15,16 @@ class CompanyController extends Controller {
 
 	public function index()
 	{
+        // $company = company::whereId(3)->first();
+        // $company->update([
+        //     'company_name' => 'Ware',
+        // ]);
+        // return $company;
+
+
 		$locations = location::all('id','location_name');
+        $publicTenantPath = tenantPath().'/uploads/company_logo/';
+
 		if (request()->ajax())
 		{
 			return datatables()->of(company::with('Location.Country')->latest()->get())
@@ -49,7 +59,7 @@ class CompanyController extends Controller {
 				->make(true);
 		}
 
-		return view('organization.company.index',compact('locations'));
+		return view('organization.company.index',compact('locations','publicTenantPath'));
 	}
 
 
@@ -95,19 +105,11 @@ class CompanyController extends Controller {
 			$data ['tax_no'] = $request->tax_no;
 			$data ['location_id'] = $request->location_id;
 
-			$company_logo = $request->company_logo;
+			$companyLogo = $request->company_logo;
 
-			if (isset($company_logo))
-			{
+            $directory = tenantPath().'/uploads/company_logo/';
 
-				if ($company_logo->isValid())
-				{
-					$file_name = preg_replace('/\s+/', '', rand()) . '_' . time() . '.' . $company_logo->getClientOriginalExtension();
-					$company_logo->storeAs('company_logo', $file_name);
-					$data['company_logo'] = $file_name;
-				}
-			}
-
+            $data['company_logo'] = Utility::imageFileStore($companyLogo, $directory, 300, 300);
 
 			company::create($data);
 
@@ -185,36 +187,34 @@ class CompanyController extends Controller {
 			}
 
 
-			$data = [];
-
-			$data['company_name'] = $request->company_name;
-			$data ['trading_name'] = $request->trading_name;
-			$data ['registration_no'] = $request->registration_no;
-			$data ['contact_no'] = $request->contact_no;
-			$data ['email'] = $request->email;
-			$data ['website'] = $request->website;
-			$data ['tax_no'] = $request->tax_no;
-			$data ['location_id'] = $request->location_id;
+			$data = [
+			    'company_name' => $request->company_name,
+			    'trading_name' => $request->trading_name,
+			    'registration_no' => $request->registration_no,
+			    'contact_no' => $request->contact_no,
+			    'email' => $request->email,
+			    'website' => $request->website,
+			    'tax_no' => $request->tax_no,
+			    'location_id' => $request->location_id,
+            ];
 
 			if ($request->company_type)
 			{
-				$data ['company_type'] = $request->company_type;
+				$data['company_type'] = $request->company_type;
 			}
-
 
 			$company_logo = $request->company_logo;
 
-			if (isset($company_logo))
-			{
+            $company = company::whereId($id);
 
-				if ($company_logo->isValid())
-				{
-					$file_name = preg_replace('/\s+/', '', rand()) . '_' . time() . '.' . $company_logo->getClientOriginalExtension();
-					$company_logo->storeAs('company_logo', $file_name);
-					$data['company_logo'] = $file_name;
-				}
+			if (isset($company_logo)) {
+                $companyExistingData = $company->first();
+                $directory = tenantPath().'/uploads/company_logo/';
+                $companyPrevLogo = $companyExistingData->company_logo;
+                Utility::fileDelete($directory, $companyPrevLogo);
+                $data['company_logo'] = Utility::imageFileStore($company_logo, $directory, 300, 300);
 			}
-			company::whereId($id)->update($data);
+			$company->update($data);
 
 			return response()->json(['success' => __('Data is successfully updated')]);
 
@@ -238,7 +238,14 @@ class CompanyController extends Controller {
 
 		if ($logged_user->can('delete-company'))
 		{
-            company::whereId($id)->delete();
+            $company = company::find($id);
+
+            $directory = tenantPath().'/uploads/company_logo/';
+            $companyPrevLogo = $company->company_logo;
+            Utility::fileDelete($directory, $companyPrevLogo);
+
+            $company->delete();
+
 			return response()->json(['success' => __('Data is successfully deleted')]);
 
 		}

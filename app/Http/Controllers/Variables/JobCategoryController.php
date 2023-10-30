@@ -10,12 +10,10 @@ use Illuminate\Support\Str;
 
 class JobCategoryController extends Controller
 {
-    //
 	public function index()
 	{
 
-		if (request()->ajax())
-		{
+		if (request()->ajax()) {
 			return datatables()->of(JobCategory::select('id', 'job_category')->get())
 				->setRowId(function ($job_category)
 				{
@@ -23,7 +21,7 @@ class JobCategoryController extends Controller
 				})
 				->addColumn('action', function ($data)
 				{
-					if (auth()->user()->can('user-edit'))
+					if (auth()->user()->can('access-variable_method'))
 					{
 						$button = '<button type="button" name="edit" id="' . $data->id . '" class="job_category_edit btn btn-primary btn-sm"><i class="dripicons-pencil"></i></button>';
 						$button .= '&nbsp;&nbsp;';
@@ -37,26 +35,18 @@ class JobCategoryController extends Controller
 				})
 				->rawColumns(['action'])
 				->make(true);
-
 		}
-
 	}
 
 	public function store(Request $request)
 	{
 		$logged_user = auth()->user();
 
-		if ($logged_user->can('user-add'))
-		{
+		if ($logged_user->can('access-variable_method')) {
 			$validator = Validator::make($request->only('job_category'),
 				[
 					'job_category' => 'required|unique:job_categories',
 				]
-//				,
-//				[
-//					'job_category.required' => 'Job Category  can not be empty',
-//					'job_category.unique'  => 'Job Category  already exist',
-//				]
 			);
 
 
@@ -75,24 +65,8 @@ class JobCategoryController extends Controller
 		}
 
 		return abort('403', __('You are not authorized'));
-
 	}
 
-
-	/**
-	 * Display the specified resource.
-	 *
-	 * @param int $id
-	 * @return \Illuminate\Http\Response
-	 */
-
-
-	/**
-	 * Show the form for editing the specified resource.
-	 *
-	 * @param int $id
-	 * @return \Illuminate\Http\Response
-	 */
 	public function edit($id)
 	{
 		if(request()->ajax())
@@ -103,30 +77,18 @@ class JobCategoryController extends Controller
 		}
 	}
 
-	/**
-	 * Update the specified resource in storage.
-	 *
-	 * @param \Illuminate\Http\Request $request
-	 * @param int $id
-	 * @return \Illuminate\Http\Response
-	 */
 	public function update(Request $request)
 	{
 		$logged_user = auth()->user();
 
-		if ($logged_user->can('user-edit'))
-		{
+		if ($logged_user->can('access-variable_method')) {
+
 			$id = $request->get('hidden_job_category_id');
 
 			$validator = Validator::make($request->only('job_category_edit'),
 				[
 					'job_category_edit' => 'required|unique:job_categories,job_category,'.$id,
 				]
-//				,
-//				[
-//					'job_category_edit.required' => 'Job Category can not be empty',
-//					'job_category_edit.unique'  => 'Job Category already exist',
-//				]
 			);
 
 
@@ -139,8 +101,6 @@ class JobCategoryController extends Controller
 
 			$data['job_category'] = $request->get('job_category_edit');
 
-
-
 			JobCategory::whereId($id)->update($data);
 
 			return response()->json(['success' => __('Data is successfully updated')]);
@@ -151,12 +111,7 @@ class JobCategoryController extends Controller
 		}
 	}
 
-	/**
-	 * Remove the specified resource from storage.
-	 *
-	 * @param int $id
-	 * @return \Illuminate\Http\Response
-	 */
+
 	public function destroy($id)
 	{
 		if(!env('USER_VERIFIED'))
@@ -165,7 +120,7 @@ class JobCategoryController extends Controller
 		}
 		$logged_user = auth()->user();
 
-		if ($logged_user->can('user-delete'))
+		if ($logged_user->can('access-variable_method'))
 		{
 			JobCategory::whereId($id)->delete();
 			return response()->json(['success' => __('Data is successfully deleted')]);

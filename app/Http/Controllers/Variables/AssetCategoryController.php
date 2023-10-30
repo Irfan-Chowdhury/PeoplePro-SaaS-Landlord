@@ -12,8 +12,7 @@ class AssetCategoryController {
 
 	public function index()
 	{
-
-        if (auth()->user()->can('view-assets-category'))
+        if (auth()->user()->can('view-category'))
         {
             if (request()->ajax())
             {
@@ -25,11 +24,11 @@ class AssetCategoryController {
                     ->addColumn('action', function ($data)
                     {
                         $button = "";
-                        if (auth()->user()->can('edit-assets-category'))
+                        if (auth()->user()->can('edit-category'))
                         {
                             $button .= '<button type="button" name="edit" id="' . $data->id . '" class="assets_category_edit btn btn-primary btn-sm"><i class="dripicons-pencil"></i></button>';
                         }
-                        if(auth()->user()->can('delete-assets-category'))
+                        if(auth()->user()->can('delete-category'))
                         {
                             $button .= '&nbsp;&nbsp;';
                             $button .= '<button type="button" name="delete" id="' . $data->id . '" class="assets_category_delete btn btn-danger btn-sm"><i class="dripicons-trash"></i></button>';
@@ -43,6 +42,7 @@ class AssetCategoryController {
 
 		    return view('assets.assets_category.assets_category');
         }
+        return abort(403);
 
 
 	}
@@ -51,7 +51,7 @@ class AssetCategoryController {
 	{
 		$logged_user = auth()->user();
 
-		if ($logged_user->can('store-assets-category'))
+		if ($logged_user->can('store-category'))
 		{
 			$validator = Validator::make($request->only('category_name'),
 				[
@@ -115,7 +115,7 @@ class AssetCategoryController {
 	{
 		$logged_user = auth()->user();
 
-		if ($logged_user->can('edit-assets-category'))
+		if ($logged_user->can('edit-category'))
 		{
 			$id = $request->get('hidden_assets_id');
 
@@ -161,7 +161,7 @@ class AssetCategoryController {
 		}
 		$logged_user = auth()->user();
 
-		if ($logged_user->can('delete-assets-category'))
+		if ($logged_user->can('delete-category'))
 		{
 			AssetCategory::whereId($id)->delete();
 			return response()->json(['success' => __('Data is successfully deleted')]);

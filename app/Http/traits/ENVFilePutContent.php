@@ -3,7 +3,7 @@ namespace App\Http\traits;
 
 trait ENVFilePutContent{
 
-    public function dataWriteInENVFile($key, $value)
+    public function dataWriteInENVFile(string|null $key, string|null $value) : void
     {
         // $path = base_path('.env');
 

@@ -335,6 +335,7 @@
                             {
                                 id: 'client',
                                 text: "{{trans('Client')}}",
+                                checked: true,
                             },
                             {
                                 id: 'invoice',
@@ -390,6 +391,17 @@
                     {
                         id: 'assets-and-category',
                         text: "{{trans('Assets And Category')}}",
+                        expanded: true,
+                        items: [
+                            {
+                                id: 'category',
+                                text: "{{trans('Category')}}",
+                            },
+                            {
+                                id: 'assets',
+                                text: "{{trans('Assets')}}",
+                            },
+                        ]
                     },
                     {
                         id: 'finance',

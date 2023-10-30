@@ -20,7 +20,7 @@
                 if (data.success) {
                     html = '<div class="alert alert-success">' + data.success + '</div>';
                     if (data.profile_picture) {
-                        $('#employee_profile_photo').html("<img src={{ URL::to('/public') }}/uploads/profile_photos/" + data.profile_picture + " width='100' height='100' class='img-thumbnail' />");
+                        $('#employee_profile_photo').html("<img src={{ URL::to($tenantPath) }}/uploads/profile_photos/" + data.profile_picture + " width='100' height='100' class='img-thumbnail' />");
                         $('#employee_profile_photo').append("<input type='hidden'  name='hidden_image' value='" + data.profile_picture + "'  />");
                     }
                     $('#profile_sample_form')[0].reset();

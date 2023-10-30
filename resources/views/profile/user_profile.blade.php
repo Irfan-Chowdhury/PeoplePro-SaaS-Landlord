@@ -14,7 +14,7 @@
 
                         <div class="card-body">
                             @if($user->profile_photo)
-                                <img src="{{url('uploads/profile_photos',$user->profile_photo)}}" height="120" width="120">
+                                <img src="{{url(tenantPath().'/uploads/profile_photos',$user->profile_photo)}}" height="120" width="120">
                             @else
                                 <img src="{{url('logo/avatar.jpg')}}" height="120" width="120" >
                             @endif

@@ -8,6 +8,7 @@ use App\Models\Tenant;
 use App\Models\User;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\File;
 use Spatie\Permission\Models\Role;
 
 trait TenantTrait {
@@ -153,7 +154,11 @@ trait TenantTrait {
 
             $this->setDataInTenantGeneralSetting($packageDetailsForTenant);
         });
+
+        
     }
+
+
 
     // public function createTenant($request, $customer, $package)
     // {

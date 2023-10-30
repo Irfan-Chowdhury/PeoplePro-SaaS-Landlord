@@ -25,7 +25,7 @@ class LeaveTypeController {
 				})
 				->addColumn('action', function ($data)
 				{
-					if (auth()->user()->can('user-edit'))
+					if (auth()->user()->can('access-variable_type'))
 					{
                         $button = "";
                         $button .= '<button type="button" name="edit" id="' . $data->id . '" class="leave_edit btn btn-primary btn-sm"><i class="dripicons-pencil"></i></button>';
@@ -50,7 +50,7 @@ class LeaveTypeController {
 
 		$logged_user = auth()->user();
 
-		if ($logged_user->can('user-add'))
+		if ($logged_user->can('access-variable_type'))
 		{
 			$validator = Validator::make($request->only('leave_type','allocated_day'),
 				[
@@ -113,7 +113,7 @@ class LeaveTypeController {
 	{
 		$logged_user = auth()->user();
 
-		if ($logged_user->can('user-edit'))
+		if ($logged_user->can('access-variable_type'))
 		{
 			$id = $request->get('hidden_leave_id');
 
@@ -206,7 +206,7 @@ class LeaveTypeController {
 		}
 		$logged_user = auth()->user();
 
-		if ($logged_user->can('user-delete'))
+		if ($logged_user->can('access-variable_type'))
 		{
 			LeaveType::whereId($id)->delete();
 

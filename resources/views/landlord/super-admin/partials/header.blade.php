@@ -7,11 +7,10 @@
             <div class="navbar-holder d-flex align-items-center justify-content-between">
                 <a id="toggle-btn" href="#" class="menu-btn"><i class="dripicons-menu"> </i></a>
                 <span class="brand-big" id="site_logo_main">
-                    {{-- @if($general_settings->site_logo) --}}
-						{{-- <img src="{{asset('/images/logo/'.$general_settings->site_logo)}}" width="140" height="70"> --}}
-                        <img src="{{asset('/images/logo/logo.png')}}" width="140" height="70">
+                    @if($generalSetting->site_logo)
+						<img src="{{asset('landlord/images/logo/'.$generalSetting->site_logo)}}" width="140" height="70">
                         &nbsp; &nbsp;
-                    {{-- @endif --}}
+                    @endif
                 </span>
 
 
@@ -49,22 +48,15 @@
 
                     <li class="nav-item">
                         <a rel="nofollow" href="#" class="nav-link dropdown-item">
-                            {{-- <img class="profile-photo sm mr-1" src="{{ asset('uploads/profile_photos/avatar.jpg')}}"> --}}
-
-                            {{-- @if(!empty(auth()->user()->profile_photo))
-                                <img class="profile-photo sm mr-1"
-                                     src="{{ asset('uploads/profile_photos/')}}/{{auth()->user()->profile_photo}}">
+                            @if(isset(auth()->user()->profile_photo))
+                                <img class="profile-photo sm mr-1" src="{{asset('landlord/images/profile/'.auth()->user()->profile_photo)}}">
                             @else
-                                <img class="profile-photo sm mr-1"
-                                     src="{{ asset('uploads/profile_photos/avatar.jpg')}}">
+                                <img class="profile-photo sm mr-1" src="{{ asset('uploads/profile_photos/avatar.jpg')}}"><span> Admin</span>
                             @endif
-                            <span> {{auth()->user()->username}}</span> --}}
-                            <img class="profile-photo sm mr-1" src="{{ asset('uploads/profile_photos/avatar.jpg')}}">
-                             <span> Admin</span>
                         </a>
                         <ul class="right-sidebar">
                             <li>
-                                <a href="#">
+                                <a href="{{ route('admin.profile') }}">
                                     <i class="dripicons-user"></i>
                                     {{trans('file.Profile')}}
                                 </a>

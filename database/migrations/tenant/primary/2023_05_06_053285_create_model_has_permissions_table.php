@@ -31,7 +31,6 @@ class CreateModelHasPermissionsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('model_has_permissions');
         Schema::table('model_has_permissions', function (Blueprint $table) {
             $table->dropForeign('model_has_permissions_permission_id_foreign');
             $table->dropIfExists('model_has_permissions');

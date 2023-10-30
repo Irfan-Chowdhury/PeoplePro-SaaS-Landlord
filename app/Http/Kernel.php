@@ -63,15 +63,16 @@ class Kernel extends HttpKernel
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
 
-        // Tenant
-        'package.validity' => \App\Http\Middleware\PackageValidity::class,
-
-
 		'XSS' => \App\Http\Middleware\XSS::class,
 		'admin' => \App\Http\Middleware\CheckAdmin::class,
 		'demoCheck' => \App\Http\Middleware\DemoCheck::class,
 		'setSuperAdminLocale' => \App\Http\Middleware\SetSuperAdminLocale::class,
 		'setPublicLocale' => \App\Http\Middleware\SetPublicLocale::class,
+
+        // Tenant
+        'package.validity' => \App\Http\Middleware\Tenant\PackageValidity::class,
+		'setMailSetting' => \App\Http\Middleware\Tenant\SetMailSetting::class,
+		'setGeneralSetting' => \App\Http\Middleware\Tenant\SetGeneralSetting::class,
     ];
 
     /**

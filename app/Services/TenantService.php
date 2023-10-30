@@ -10,13 +10,14 @@ use App\Models\Landlord\Package;
 use App\Models\Tenant;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\File;
 use Spatie\Permission\Models\Role;
 
 class TenantService
 {
     // use TenantTrait;
 
-    public function NewTenantGenerate($request) : object
+    public function newTenantGenerate($request) : object
     {
         $customer = Customer::create(self::customerData($request));
         $package = Package::find($request->package_id);
@@ -69,7 +70,7 @@ class TenantService
         $tenant = Tenant::create($tenantData);
         $tenant->domains()->create(['domain' => $request->tenant.'.'.env('CENTRAL_DOMAIN')]); // This Line
 
-        $tenant->run(function () use ($request, $permissions, $allPermissionIds, $packageDetailsForTenant) {
+        $tenant->run(function ($tenant) use ($request, $permissions, $allPermissionIds, $packageDetailsForTenant) {
             DB::table('permissions')->insert($permissions);
             $user = self::tenantAdminCreate($request);
             $role = Role::findById(1);
@@ -77,10 +78,12 @@ class TenantService
 			$user->syncRoles(1);
 
             self::setDataInTenantGeneralSetting($packageDetailsForTenant);
+            self::directoryCreateAndCopyFiles($tenant->id);
         });
 
         return $tenant;
     }
+
 
     protected function numberOfDaysToExpired($package, $generalSetting, $request)
     {
@@ -93,16 +96,6 @@ class TenantService
 
         return $numberOfDaysToExpired;
     }
-
-
-    protected function setDataInTenantGeneralSetting($packageDetailsForTenant) : void
-    {
-        $tenantGeneralSetting = TenantGeneralSetting::latest()->first();
-        $tenantGeneralSetting->update([
-            'package_details' => json_encode($packageDetailsForTenant)
-        ]);
-    }
-
 
     public function packageDetailsForTenant($package, $generalSetting, $request)
     {
@@ -119,7 +112,6 @@ class TenantService
         ];
     }
 
-
     protected function tenantAdminCreate($request) : object
     {
         return User::create([
@@ -134,7 +126,65 @@ class TenantService
         ]);
     }
 
+    protected function setDataInTenantGeneralSetting($packageDetailsForTenant) : void
+    {
+        $tenantGeneralSetting = TenantGeneralSetting::latest()->first();
+        $tenantGeneralSetting->update([
+            'package_details' => json_encode($packageDetailsForTenant)
+        ]);
+    }
 
+    public function directoryCreateAndCopyFiles($tenantId) : void
+    {
+        self::generateDirectory($tenantId);
+        self::copySampleFilesToDestination($tenantId);
+    }
+
+    protected function generateDirectory($tenantId) : void
+    {
+        $data = [
+            public_path('tenants/'.$tenantId.'/images/logo'),
+            public_path('tenants/'.$tenantId.'/logo'), // no link found
+            public_path('tenants/'.$tenantId.'/sample_file'),
+            public_path('tenants/'.$tenantId.'/uploads/asset_file'),
+            public_path('tenants/'.$tenantId.'/uploads/award_photos'), // Done -> File Delete During Update, Delete
+            public_path('tenants/'.$tenantId.'/uploads/candidate_cv'),
+            public_path('tenants/'.$tenantId.'/uploads/company_logo'),
+            public_path('tenants/'.$tenantId.'/uploads/employee_documents'),
+            public_path('tenants/'.$tenantId.'/uploads/file_manager'),
+            public_path('tenants/'.$tenantId.'/uploads/immigration_documents'),
+            public_path('tenants/'.$tenantId.'/uploads/official_documents'),
+            public_path('tenants/'.$tenantId.'/uploads/profile_photos'),
+            public_path('tenants/'.$tenantId.'/uploads/project_bug_attachments'),
+            public_path('tenants/'.$tenantId.'/uploads/project_discussion_attachments'),
+            public_path('tenants/'.$tenantId.'/uploads/project_file_attachments'),
+            public_path('tenants/'.$tenantId.'/uploads/task_file_attachments'),
+            public_path('tenants/'.$tenantId.'/uploads/ticket_attachments')
+        ];
+
+        foreach($data as $item) {
+            if (!File::isDirectory($item)) {
+                File::makeDirectory($item, 0755, true, true);
+            }
+        }
+    }
+
+    protected function copySampleFilesToDestination($tenantId) : void
+    {
+        $sourceSampleFileDirectory = public_path('sample_file');
+        $destinationSampleFileDirectory = public_path('tenants/'.$tenantId.'/sample_file');
+
+        // Get a list of all files in the source directory
+        $files = File::allFiles($sourceSampleFileDirectory);
+
+        foreach ($files as $file) {
+            // Build the destination path by replacing the source directory with the destination directory
+            $destinationPath = str_replace($sourceSampleFileDirectory, $destinationSampleFileDirectory, $file->getPathname());
+
+            // Copy the file to the destination
+            File::copy($file->getPathname(), $destinationPath);
+        }
+    }
 
     public function permissionUpdate($tenant, $request, $package)
     {

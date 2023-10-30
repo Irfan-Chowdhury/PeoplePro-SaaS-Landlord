@@ -145,64 +145,15 @@ use App\Models\GeneralSetting;
 use App\Models\company;
 
 
-// Auth::routes(['register' => false]);
-
-// Route::middleware(['universal'])->group(function () {
-//     Auth::routes();
-// });
-
 
 Route::get('/get-host', function () {
     return config('tenancy.central_domains');
 });
 
 
-// Route::get('/saas', [GeneralSettingController::class, 'testGeneral']);
+Route::middleware(['XSS', 'web', 'package.validity', 'setMailSetting', 'setGeneralSetting' ,InitializeTenancyByDomain::class, PreventAccessFromCentralDomains::class])->group(function () {
 
-// Route::get('/', function () {
-//     // return DB::table('general_settings')->latest()->first();
-//     return 'This is Tenant Section - tenant.php';
-// });
-
-// Route::get('/xyz', function () {
-//     return 'xyz- tenant.php';
-// });
-
-// Route::middleware([
-//     'web',
-//     InitializeTenancyByDomain::class,
-//     PreventAccessFromCentralDomains::class,
-// ])->group(function () {
-//     Route::get('/saas', function () {
-//         return 'This is your multi-tenant application. The id of the current tenant is ' . tenant('id');
-//     });
-// });
-
-
-
-
-// Route::get('/', function () {
-//     dd(\App\Models\User::all());
-//     return 'This is your multi-tenant application. The id of the current tenant is ' . tenant('id');
-// });
-
-
-Route::middleware(['XSS', 'web', 'package.validity',InitializeTenancyByDomain::class, PreventAccessFromCentralDomains::class])->group(function () {
-
-    Auth::routes(['register' => false]);
-
-    // Route::get('/', function () {
-        // return Auth::user();
-        // return company::latest()->first();
-        // return view('auth.login');
-    // });
-
-    //     // return GeneralSetting::latest()->first();
-    //     // return 'This is your multi-tenant application. The id of the current tenant is ' . tenant('id');
-    //
-    // Route::get('/tenant-saas', [GeneralSettingController::class, 'testGeneral']);
-    // Route::group(['middleware' => ['XSS']], function () {
-
+        Auth::routes(['register' => false]);
 
         Route::get('/pdf', function () {
             return view('pdf');
@@ -218,7 +169,7 @@ Route::middleware(['XSS', 'web', 'package.validity',InitializeTenancyByDomain::c
         Route::get('/jobs/details/{job_post}', [JobController::class, 'details'])->name('jobs.details');
         Route::get('/jobs/search/category/{url}', [JobController::class, 'searchByCategory'])->name('jobs.searchByCategory');
         Route::get('/jobs/search/job_type/{job_type}', [JobController::class, 'searchByJobType'])->name('jobs.searchByJobType');
-        Route::get('/jobs/apply/{job}', [JobController::class, 'applyForJob'])->name('jobs.apply');
+        Route::post('/jobs/apply/{job}', [JobController::class, 'applyForJob'])->name('jobs.apply');
 
         Route::get('markAsRead', [RouteClosureHandlerController::class, 'markAsReadNotification'])->name('markAsRead');
         Route::get('/all/notifications', [RouteClosureHandlerController::class, 'allNotifications'])->name('seeAllNoti');
@@ -229,10 +180,8 @@ Route::middleware(['XSS', 'web', 'package.validity',InitializeTenancyByDomain::c
         Route::post('/profile/employee/{id}', [DashboardController::class, 'employeeProfileUpdate'])->name('employee_profile_update');
         Route::post('/profile/change_password/{id}', [DashboardController::class, 'change_password'])->name('change_password');
 
-        // Languages Section
         Route::prefix('languages')->group(function () {
             Route::get('/{language}/translations', [LanguageSettingController::class, 'index'])->name('languages.translations.index');
-            // Route::get('/{language}', [LanguageSettingController::class, 'index'])->name('languages.translations.index');
             Route::post('/update', [LanguageSettingController::class, 'update'])->name('language.translations.update');
             Route::get('/create', [LanguageSettingController::class, 'create'])->name('languages.create');
             Route::post('/store', [LanguageSettingController::class, 'store'])->name('languages.store');
@@ -471,16 +420,6 @@ Route::middleware(['XSS', 'web', 'package.validity',InitializeTenancyByDomain::c
             ]);
             Route::get('transfers/{id}/delete', [TransferController::class, 'destroy'])->name('transfers.destroy');
             Route::post('transfers/delete/selected', [TransferController::class, 'delete_by_selection'])->name('mass_delete_transfers');
-
-            // Route::controller(ResignationController::class)->group(function () {
-            //     Route::post('resignations/update', 'update')->name('resignations.update');
-            //     Route::resource('resignations')->except([
-            //         'destroy', 'create', 'update',
-            //     ]);
-            //     Route::get('resignations/{id}/delete', 'destroy')->name('resignations.destroy');
-            //     Route::post('resignations/delete/selected', 'delete_by_selection')->name('mass_delete_resignations');
-            //     Route::get('resignations/{resignation}/restore', 'restore')->name('resignations.restore');
-            // });
 
             Route::post('resignations/update', [ResignationController::class, 'update'])->name('resignations.update');
             Route::resource('resignations', ResignationController::class)->except([
@@ -968,41 +907,4 @@ Route::middleware(['XSS', 'web', 'package.validity',InitializeTenancyByDomain::c
                 Route::get('/delete-checkbox', [AppraisalController::class, 'deleteCheckbox'])->name('performance.appraisal.delete.checkbox');
             });
         });
-
-        // Auto Update
-        Route::group(['prefix' => 'developer-section'], function () {
-            Route::get('/', [DeveloperSectionController::class, 'index'])->name('admin.developer-section.index');
-            Route::post('/', [DeveloperSectionController::class, 'submit'])->name('admin.developer-section.submit');
-            Route::post('/bug-update-setting', [DeveloperSectionController::class, 'bugUpdateSetting'])->name('admin.bug-update-setting.submit');
-            Route::post('/version-upgrade-setting', [DeveloperSectionController::class, 'versionUpgradeSetting'])->name('admin.version-upgrade-setting.submit');
-        });
-
-        Route::get('/new-release', [ClientAutoUpdateController::class, 'newVersionReleasePage'])->name('new-release');
-        Route::get('/bugs', [ClientAutoUpdateController::class, 'bugUpdatePage'])->name('bug-update-page');
-        // Action on Client server
-        Route::post('version-upgrade', [ClientAutoUpdateController::class, 'versionUpgrade'])->name('version-upgrade');
-        Route::post('bug-update', [ClientAutoUpdateController::class, 'bugUpdate'])->name('bug-update');
-
-    // });
-
 });
-
-
-// ===== Testing ======
-//Route::group(['prefix' => 'api', 'middleware' => 'auth'], function ()
-//{
-//	Route::get('find', function (Illuminate\Http\Request $request)
-//	{
-//		$keyword = $request->input('keyword');
-//		Log::info($keyword);
-//		$names = DB::table('employees')->where('first_name', 'like', '%' . $keyword . '%')
-//			->orWhere('last_name', 'like', '%' . $keyword . '%')
-//			->select('employees.id', DB::raw("CONCAT(employees.first_name,' ',employees.last_name) as full_name"))
-//			->get();
-//
-//		return json_encode($names);
-//	})->name('api.names');
-//});
-
-//Employeer
-//Set Null

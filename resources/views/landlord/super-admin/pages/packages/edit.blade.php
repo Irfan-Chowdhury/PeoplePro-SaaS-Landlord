@@ -369,7 +369,7 @@
                             {
                                 id: 'client',
                                 text: "{{trans('Client')}}",
-                                checked: ($.inArray('client', permissionNames) >= 0) ? true : false,
+                                checked: true,
                             },
                             {
                                 id: 'invoice',
@@ -434,6 +434,19 @@
                         id: 'assets-and-category',
                         text: "{{trans('Assets And Category')}}",
                         checked: ($.inArray('assets-and-category', permissionNames) >= 0) ? true : false,
+                        expanded: true,
+                        items: [
+                            {
+                                id: 'category',
+                                text: "{{trans('Category')}}",
+                                checked: ($.inArray('category', permissionNames) >= 0) ? true : false,
+                            },
+                            {
+                                id: 'assets',
+                                text: "{{trans('Assets')}}",
+                                checked: ($.inArray('assets', permissionNames) >= 0) ? true : false,
+                            },
+                        ]
                     },
                     {
                         id: 'finance',

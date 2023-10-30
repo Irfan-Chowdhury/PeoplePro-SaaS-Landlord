@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Facades\Utility;
 use App\Models\company;
 use App\Models\department;
 use App\Models\designation;
@@ -9,6 +10,8 @@ use App\Models\DocumentType;
 use App\Models\Employee;
 use App\Http\traits\LeaveTypeDataManageTrait;
 use App\Imports\UsersImport;
+use App\Mail\ConfirmationEmail;
+use App\Models\MailSetting;
 use App\Models\office_shift;
 use App\Models\QualificationEducationLevel;
 use App\Models\QualificationLanguage;
@@ -18,7 +21,9 @@ use App\Models\User;
 use Barryvdh\DomPDF\Facade\Pdf as PDF;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 use Maatwebsite\Excel\Facades\Excel;
 use Maatwebsite\Excel\Validators\ValidationException;
@@ -122,7 +127,7 @@ class EmployeeController extends Controller
                     })
                     ->addColumn('name', function ($row) {
                         if ($row->user->profile_photo) {
-                            $url = url('uploads/profile_photos/'.$row->user->profile_photo);
+                            $url = url(tenantPath().'/uploads/profile_photos/'.$row->user->profile_photo);
                             $profile_photo = '<img src="'.$url.'" class="profile-photo md" style="height:35px;width:35px"/>';
                         } else {
                             $url = url('logo/avatar.jpg');
@@ -256,17 +261,8 @@ class EmployeeController extends Controller
                 $user['contact_no'] = $request->contact_no;
                 $user['is_active'] = 1;
 
-                $photo = $request->profile_photo;
-                $file_name = null;
-
-                if (isset($photo)) {
-                    $new_user = $request->username;
-                    if ($photo->isValid()) {
-                        $file_name = preg_replace('/\s+/', '', $new_user).'_'.time().'.'.$photo->getClientOriginalExtension();
-                        $photo->storeAs('profile_photos', $file_name);
-                        $user['profile_photo'] = $file_name;
-                    }
-                }
+                $fileName = Utility::imageFileStore($request->profile_photo, tenantPath().'/uploads/profile_photos/', 300, 200);
+                $user['profile_photo'] = $fileName;
 
                 DB::beginTransaction();
                 try {
@@ -322,9 +318,10 @@ class EmployeeController extends Controller
             $general_skills = QualificationSkill::select('id', 'name')->get();
 
             $roles = Role::where('id', '!=', 3)->where('is_active', 1)->select('id', 'name')->get(); //--new--
-
+            $tenantPath = tenantPath();
             return view('employee.dashboard', compact('employee', 'countries', 'companies',
-                'departments', 'designations', 'statuses', 'office_shifts', 'document_types', 'education_levels', 'language_skills', 'general_skills', 'roles'));
+                'departments', 'designations', 'statuses', 'office_shifts', 'document_types',
+                'education_levels', 'language_skills', 'general_skills', 'roles', 'tenantPath'));
         } else {
             return response()->json(['success' => __('You are not authorized')]);
         }
@@ -368,7 +365,7 @@ class EmployeeController extends Controller
         $file_path = $user->profile_photo;
 
         if ($file_path) {
-            $file_path = public_path('uploads/profile_photos/'.$file_path);
+            $file_path = public_path(tenantPath().'/uploads/profile_photos/'.$file_path);
             if (file_exists($file_path)) {
                 unlink($file_path);
             }
@@ -562,24 +559,13 @@ class EmployeeController extends Controller
 
         if ($logged_user->can('modify-details-employee') || $logged_user->id == $employee) {
 
-            $data = [];
-            $photo = $request->profile_photo;
-            $file_name = null;
-
-            if (isset($photo)) {
-                $new_user = $request->employee_username;
-                if ($photo->isValid()) {
-                    $file_name = preg_replace('/\s+/', '', $new_user).'_'.time().'.'.$photo->getClientOriginalExtension();
-                    $photo->storeAs('profile_photos', $file_name);
-                    $data['profile_photo'] = $file_name;
-                }
-            }
-
             $this->unlink($employee);
+            $fileName = Utility::imageFileStore($request->profile_photo, tenantPath().'/uploads/profile_photos/', 300, 200);
+            $data['profile_photo'] = $fileName;
 
             User::whereId($employee)->update($data);
 
-            return response()->json(['success' => 'Data is successfully updated', 'profile_picture' => $file_name]);
+            return response()->json(['success' => 'Data is successfully updated', 'profile_picture' => $fileName]);
 
         }
 
@@ -688,12 +674,12 @@ class EmployeeController extends Controller
 
     public function importPost()
     {
-
         if (! env('USER_VERIFIED')) {
             $this->setErrorMessage('This feature is disabled for demo!');
 
             return redirect()->back();
         }
+
         try {
             Excel::queueImport(new UsersImport(), request()->file('file'));
         } catch (ValidationException $e) {

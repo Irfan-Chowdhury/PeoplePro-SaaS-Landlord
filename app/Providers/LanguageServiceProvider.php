@@ -25,13 +25,6 @@ class LanguageServiceProvider extends ServiceProvider
     public function boot()
     {
 
-        View::composer(['layout.main_partials.header', 'layout.client','landlord.super-admin.partials.header'], 'App\Http\View\Composers\LayoutComposer');
-        // View::composer(['layout.main_partials.header', 'layout.client'], 'App\Http\View\Composers\LayoutComposer');
-
-
-		// View::composer(
-		// 	'layout.main', 'App\Http\View\Composers\LayoutComposer'
-		// );
-        // vendor / translation / languages / create.blade
+        View::composer(['layout.main_partials.header', 'layout.client','landlord.super-admin.partials.header', 'landlord.public-section.layouts.master'], 'App\Http\View\Composers\LayoutComposer');
     }
 }

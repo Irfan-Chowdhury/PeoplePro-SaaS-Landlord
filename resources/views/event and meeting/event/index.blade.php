@@ -253,12 +253,15 @@
 
         $(document).ready(function () {
 
+
             let date = $('.date');
+            let dateFormatJs = @json(session('dateFormatJs'));
             date.datepicker({
-                format: '{{ env('Date_Format_JS')}}',
+                format: dateFormatJs,
                 autoclose: true,
                 todayHighlight: true
             });
+
 
 
             let table_table = $('#event-table').DataTable({

@@ -75,7 +75,7 @@ class User extends Authenticatable
 	{
 		if ($value)
 		{
-			return Carbon::parse($value)->format(env('Date_Format').'--H:i');
+			return Carbon::parse($value)->format(session()->get('dateFormat').'--H:i');
 		}
 		else {
 			return null;

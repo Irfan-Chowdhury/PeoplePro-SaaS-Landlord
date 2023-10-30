@@ -23,6 +23,7 @@ class Package extends Model
         'permission_ids',
         // 'role_permission_values',
         'is_active',
+        'position'
     ];
 
 }

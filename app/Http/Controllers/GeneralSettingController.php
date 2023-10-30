@@ -2,11 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Facades\Utility;
+use App\Http\Requests\Mail\MailSettingRequest;
 use App\Models\Employee;
 use App\Http\traits\ENVFilePutContent;
+use App\Mail\ConfirmationEmail;
 use App\Models\FinanceBankCash;
 use App\Models\GeneralSetting;
 use App\Models\LeaveType;
+use App\Models\MailSetting;
 use App\Notifications\EmployeeLeaveNotification;
 use App\Models\User;
 use DB;
@@ -15,7 +19,9 @@ use Illuminate\Support\Facades\Notification;
 
 use Illuminate\Foundation\Bootstrap\LoadEnvironmentVariables;
 use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Dotenv;
+use Illuminate\Support\Facades\Mail;
 
 use function config;
 use ZipArchive;
@@ -55,23 +61,9 @@ class GeneralSettingController extends Controller
 		return abort('403', __('You are not authorized'));
 	}
 
-    protected function test()
-    {
-        // Notification::route('mail', 'irfanchowdhury80@gmail.com')
-        // ->notify(new EmployeeLeaveNotification(
-        //     'Irfan Chowdhury',
-        //     '12',
-        //     '2023-04-19',
-        //     '2023-04-24',
-        //     'Test',
-        // ));
-        // return 'ok';
-    }
-
 
 	public function update(Request $request, $id)
 	{
-        // return $this->test();
 
 		if (auth()->user()->can('store-general-setting'))
 		{
@@ -86,28 +78,6 @@ class GeneralSettingController extends Controller
 			]);
 
 			$data = $request->all();
-
-			//writting timezone info in .env file
-            $this->dataWriteInENVFile('APP_TIMEZONE',$request->timezone);
-            $this->dataWriteInENVFile('Date_Format',$request->date_format);
-			$js_format = config('date_format_conversion.' . $request->date_format);
-            $this->dataWriteInENVFile('Date_Format_JS',$js_format);
-            $this->dataWriteInENVFile('RTL_LAYOUT',$request->input('rtl_layout', NULL));
-            $this->dataWriteInENVFile('ENABLE_CLOCKIN_CLOCKOUT',$request->input('enable_clockin_clockout', NULL));
-            $this->dataWriteInENVFile('ENABLE_EARLY_CLOCKIN',$request->input('enable_early_clockin', NULL));
-            $this->dataWriteInENVFile('ATTENDANCE_DEVICE_DATE_FORMAT',$request->Attendance_Device_date_format ? $request->Attendance_Device_date_format : 'm/d/Y');
-
-			$path = base_path('config/variable.php');
-
-			$searchArray = array(
-				config('variable.currency'),
-				config('variable.currency_format'), config('variable.account_id'));
-
-			$replaceArray = array($request->currency, $request->currency_format, $request->account_id);
-
-			file_put_contents($path, str_replace($searchArray, $replaceArray, file_get_contents($path)));
-
-
 			$general_setting = GeneralSetting::findOrFail($id);
 			$general_setting->id = 1;
 			$general_setting->site_title = $data['site_title'];
@@ -115,37 +85,21 @@ class GeneralSettingController extends Controller
 			$general_setting->currency = $data['currency'];
 			$general_setting->currency_format = $data['currency_format'];
 			$general_setting->date_format = $data['date_format'];
+
+            $js_format = config('date_format_conversion.' .$request->date_format);
+            $general_setting->date_format_js = $js_format;
+
 			$general_setting->default_payment_bank = $data['account_id'];
 			$general_setting->footer = $request->footer;
 			$general_setting->footer_link = $request->footer_link;
-
-			$logo = $request->site_logo;
-
-
-			if ($logo)
-			{
-				$file_path = $general_setting->site_logo;
-
-
-				if ($file_path)
-				{
-					$file_path = public_path('images/logo/' . $file_path);
-
-					if (file_exists($file_path))
-					{
-						unlink($file_path);
-					}
-				}
-
-				$ext = pathinfo($logo->getClientOriginalName(), PATHINFO_EXTENSION);
-				$logoName = 'logo.' . $ext;
-				$logo->move(public_path('images/logo'), $logoName);
-				$general_setting->site_logo = $logoName;
-
-			}
+			$general_setting->rtl_layout = $request->rtl_layout ?? false;
+			$general_setting->enable_clockin_clockout = $request->enable_clockin_clockout ?? false;
+			$general_setting->enable_early_clockin = $request->enable_early_clockin ?? null;
+			$general_setting->attendance_device_date_format = $request->attendance_device_date_format;
+            $general_setting->site_logo = Utility::directoryCleanAndImageStore($request->site_logo, tenantPath().'/images/logo/', 300, 300);
 			$general_setting->save();
 
-            $this->setErrorMessage('Data updated successfully');
+            $this->setSuccessMessage('Data updated successfully');
             return redirect()->back();
 		}
 
@@ -157,41 +111,50 @@ class GeneralSettingController extends Controller
 	{
 		if (auth()->user()->can('view-mail-setting'))
 		{
-			return view('settings.mail_setting.mail');
+            $mailSetting = MailSetting::latest()->first();
+            $decryptPassword = isset($mailSetting->password) ? Crypt::decrypt($mailSetting->password) : null;
+			return view('settings.mail_setting.mail', compact('mailSetting','decryptPassword'));
 		}
 		return abort('403', __('You are not authorized'));
 	}
 
-	public function mailSettingStore(Request $request)
+	public function mailSettingStore(MailSettingRequest $request)
 	{
-		if(!env('USER_VERIFIED'))
-		{
-			return redirect()->back()->with('msg', 'This feature is disable for demo!');
+		if(!env('USER_VERIFIED')) {
+			return redirect()->back()->with(['message' => 'This feature is disable for demo!', 'type' => 'danger']);
 		}
 
-		if (auth()->user()->can('view-mail-setting'))
-		{
+		if (auth()->user()->can('view-mail-setting')) {
+            MailSetting::create([
+                'driver' => $request->driver,
+                'host' => $request->host,
+                'port' => $request->port,
+                'from_address' => $request->from_address,
+                'from_name' => $request->from_name,
+                'username' => $request->username,
+                'password' => Crypt::encrypt($request->password),
+                'encryption' => $request->encryption,
+            ]);
 
-            $this->dataWriteInENVFile('MAIL_HOST',$request->mail_host);
-            $this->dataWriteInENVFile('MAIL_PORT',$request->port);
-            $this->dataWriteInENVFile('MAIL_FROM_ADDRESS',$request->mail_address);
-            $this->dataWriteInENVFile('MAIL_PASSWORD',$request->password);
-            $this->dataWriteInENVFile('MAIL_FROM_NAME',".'$request->mail_name'.");
-            $this->dataWriteInENVFile('MAIL_ENCRYPTION',$request->encryption);
-			return redirect()->back()->with('message', 'Data updated successfully');
+            // tenantSetMailInfo();
+            // Mail::to($request->mail_address)->send(new ConfirmationEmail($mailSetting)); //This is ok
 
-
-			//writting mail info in .env file
-            // $data = $request->all();
-			// $path = '.env';
-			// $searchArray = array('MAIL_HOST="' . env('MAIL_HOST') . '"', 'MAIL_PORT=' . env('MAIL_PORT'), 'MAIL_FROM_ADDRESS="' . env('MAIL_FROM_ADDRESS') . '"', 'MAIL_FROM_NAME="' . env('MAIL_FROM_NAME') . '"', 'MAIL_USERNAME="' . env('MAIL_USERNAME') . '"', 'MAIL_PASSWORD="' . env('MAIL_PASSWORD') . '"', 'MAIL_ENCRYPTION="' . env('MAIL_ENCRYPTION') . '"');
-			// // $searchArray = array('MAIL_HOST=' . env('MAIL_HOST'),'MAIL_PORT=' . env('MAIL_PORT'),'MAIL_FROM_ADDRESS=' . env('MAIL_FROM_ADDRESS'),'MAIL_FROM_NAME=' . env('MAIL_FROM_NAME'),'MAIL_USERNAME=' . env('MAIL_USERNAME'),'MAIL_PASSWORD=' . env('MAIL_PASSWORD'),'MAIL_ENCRYPTION=' . env('MAIL_ENCRYPTION'));
-			// $replaceArray = array('MAIL_HOST="' . $data['mail_host'] . '"', 'MAIL_PORT=' . $data['port'], 'MAIL_FROM_ADDRESS="' . $data['mail_address'] . '"', 'MAIL_FROM_NAME="' . $data['mail_name'] . '"', 'MAIL_USERNAME="' . $data['mail_address'] . '"', 'MAIL_PASSWORD="' . $data['password'] . '"', 'MAIL_ENCRYPTION="' . $data['encryption'] . '"');
-			// file_put_contents($path, str_replace($searchArray, $replaceArray, file_get_contents($path)));
-			// return redirect()->back()->with('message', 'Data updated successfully');
+            return redirect()->back()->with(['message' => 'Data updated successfully', 'type' => 'success']);
 		}
 		return abort('403', __('You are not authorized'));
 	}
+
+    // public function setMailInfo($mailSetting)
+    // {
+    //     config()->set('mail.driver', $mailSetting->driver);
+    //     config()->set('mail.host', $mailSetting->host);
+    //     config()->set('mail.port', $mailSetting->port);
+    //     config()->set('mail.from.address', $mailSetting->from_address);
+    //     config()->set('mail.from.name', $mailSetting->from_name);
+    //     config()->set('mail.username', $mailSetting->username);
+    //     config()->set('mail.password', Crypt::decrypt($mailSetting->password));
+    //     config()->set('mail.encryption', $mailSetting->encryption);
+    // }
 
 	public function emptyDatabase()
 	{
