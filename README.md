@@ -1,3 +1,8 @@
+#### <i> [ N.B : Due to copyright issues, the tenant's part and some important files have been hidden ]<i>
+
+<br>
+
+
 <div align='center'>
 
 # PeoplePro SaaS (Partials)
@@ -665,5 +670,4 @@ Here `smarthishab` is the cPanel user name. Just replace with your username.
 
 
 
-<br><br>
-##### <h4>[ N.B :  Due to copyright issues, the tenant part have been kept hide]</h4>
+
