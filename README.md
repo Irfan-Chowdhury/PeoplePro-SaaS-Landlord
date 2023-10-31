@@ -1,13 +1,31 @@
 <div align='center'>
 
-# PeopleProSAAS (Landlord)
+# PeoplePro SaaS (Partials)
 </div>
 
 ## Visit
-- Demo : http://smarthishab.com/
+- Demo : https://peopleprohrmsaas.com
+- Documentation : https://peopleprohrmsaas.com/central-documentation
 
-- Super Admin : smarthishab.com/super-admin
-- Super Admin Credentials : Username & Password both "admin"
+<br>
+
+- Super-Admin : https://peopleprohrmsaas.com/super-admin
+- username : admin
+- password : admin
+
+<br>
+
+
+- Tenant-1 : https://acme.peopleprohrmsaas.com/login
+- username : admin
+- password : admin
+
+<br>
+
+
+- Tenant-2 : https://lion.peopleprohrmsaas.com/login
+- username : admin
+- password : admin
 
 
 ## About
@@ -75,7 +93,9 @@ Experience the next evolution in organizational management with PeoplePro, a cut
 
 2. Add the following line to the hosts file
     ```bash
-    127.0.0.1 peopleprosjaas.test
+    127.0.0.1 peopleprossaas.test
+    127.0.0.1 foo.peopleprossaas.test
+    127.0.0.1 acme.peopleprossaas.test
     ```
 3. Configure the Virtual Host (Apache)
     ```bash
@@ -86,15 +106,41 @@ Experience the next evolution in organizational management with PeoplePro, a cut
     <VirtualHost *:80>
         ServerName peoplepro.test
         DocumentRoot /path/to/your/laravel/project/public
-
         <Directory /path/to/your/laravel/project/public>
             Options Indexes FollowSymLinks
             AllowOverride All
             Require all granted
         </Directory>
-
         ErrorLog ${APACHE_LOG_DIR}/peoplepro.test_error.log
         CustomLog ${APACHE_LOG_DIR}/peoplepro.test_access.log combined
+    </VirtualHost>
+
+
+    <VirtualHost *:80>
+        ServerName foo.peopleprosaas.test
+        ServerAlias www.foo.peopleprosaas.test
+        DocumentRoot /var/www/peopleprosaas/public
+        <Directory /var/www/peopleprosaas/public>
+            Options Indexes FollowSymLinks
+            AllowOverride All
+            Require all granted
+        </Directory>
+        ErrorLog ${APACHE_LOG_DIR}/peopleprosaas-error.log
+        CustomLog ${APACHE_LOG_DIR}/peopleprosaas-access.log combined
+    </VirtualHost>
+
+
+    <VirtualHost *:80>
+        ServerName acme.peopleprosaas.test
+        ServerAlias www.acme.peopleprosaas.test
+        DocumentRoot /var/www/peopleprosaas/public
+        <Directory /var/www/peopleprosaas/public>
+            Options Indexes FollowSymLinks
+            AllowOverride All
+            Require all granted
+        </Directory>
+        ErrorLog ${APACHE_LOG_DIR}/peopleprosaas-error.log
+        CustomLog ${APACHE_LOG_DIR}/peopleprosaas-access.log combined
     </VirtualHost>
     ```
 
@@ -591,14 +637,33 @@ public function createDatabase(TenantWithDatabase $tenant): bool
 }
 ```
 
+## .cpanel.yml file create for cPanel
+create file name -  `.cpanel.yml` and 
+then write the code - 
+
+```php
+---
+deployment:
+  tasks:
+    - export DEPLOYPATH=/home/smarthishab/public_html/
+    - /bin/cp * $DEPLOYPATH
+```
+Here `smarthishab` is the cPanel user name. Just replace with your username.
+
+
+
 ## Credits
 - Author : [LION CODERS](https://lion-coders.com/)
 - Template Design : [Tarik Iqbal](https://www.linkedin.com/in/tarik-iqbal-51046b34/)
 - Backend Developer : [Irfan Chowdhury](https://github.com/Irfan-Chowdhury)
 - Reference : [Tenancy for Laravel](https://tenancyforlaravel.com/)
 - Guided by : [Ashfaqur Rahman](https://github.com/ashfaqdev)
+- cPanel :
+    - Youtube : [Deploy GitHub Public & Private Repositories to any Shared Hosting (cPanel & hPanel)](https://www.youtube.com/watch?v=4LmTjKuvpYs&t=1027s) 
+    - [cPanel Documentation](https://docs.cpanel.net/cpanel/files/git-version-control/)
+    - [Setup SSH Key with cPanel](https://docs.cpanel.net/knowledge-base/web-services/guide-to-git-set-up-access-to-private-repositories/) 
 
 
 
 <br><br>
-##### <p>[Note:  Due to copyright reasons, the migration files (tenant) have been kept hide]</p>
+##### <h4>[ N.B :  Due to copyright issues, the tenant part have been kept hide]</h4>
